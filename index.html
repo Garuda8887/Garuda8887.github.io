@@ -104,6 +104,32 @@
         }
 
         /* Projects */
+        .category {
+            margin-bottom: 2.5rem;
+        }
+
+        .category:last-child {
+            margin-bottom: 0;
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0 0 1rem 0;
+        }
+
+        .category-title::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            flex-shrink: 0;
+        }
+
         .projects {
             display: grid;
             gap: 1.25rem;
@@ -220,57 +246,198 @@
 
         <section class="work">
             <h2>Selected work</h2>
-            <div class="projects">
-                <div class="project">
-                    <div class="project-title">
-                        <a href="https://github.com/Garuda8887/recall" target="_blank" rel="noopener noreferrer">Recall</a>
+
+            <div class="category">
+                <h3 class="category-title">Security &amp; Privacy</h3>
+                <div class="projects">
+                    <div class="project">
+                        <div class="project-title">
+                            <a href="https://github.com/Garuda8887/whisperdrop" target="_blank" rel="noopener noreferrer">whisperdrop</a>
+                        </div>
+                        <p>A zero-knowledge, burn-after-reading pastebin — secrets are encrypted client-side with AES-256-GCM and self-destruct after one view.</p>
+                        <div class="tags">
+                            <span class="tag">JavaScript</span>
+                            <span class="tag">AES-256-GCM</span>
+                            <span class="tag">Zero-knowledge</span>
+                            <span class="tag">Express</span>
+                        </div>
                     </div>
-                    <p>Self-hosted spaced repetition calendar built on the SM-2 algorithm — the same science behind how memory actually works. Forgetting curves, knowledge graph, drag-and-drop scheduling. Designed for visual thinkers, not flashcard power users.</p>
-                    <div class="tags">
-                        <span class="tag">Node.js</span>
-                        <span class="tag">SQLite</span>
-                        <span class="tag">Vanilla JS</span>
-                        <span class="tag">Self-hosted</span>
+
+                    <div class="project">
+                        <div class="project-title">
+                            <a href="https://github.com/Garuda8887/DropZone" target="_blank" rel="noopener noreferrer">DropZone</a>
+                        </div>
+                        <p>Secure, peer-to-peer file transfer in the browser using WebRTC — no uploads, no size limits, no accounts.</p>
+                        <div class="tags">
+                            <span class="tag">JavaScript</span>
+                            <span class="tag">WebRTC</span>
+                            <span class="tag">P2P</span>
+                            <span class="tag">Socket.io</span>
+                        </div>
+                    </div>
+
+                    <div class="project">
+                        <div class="project-title">
+                            <a href="https://github.com/Garuda8887/linux-forensics-collector" target="_blank" rel="noopener noreferrer">linux-forensics-collector</a>
+                        </div>
+                        <p>A zero-dependency, automated Linux forensics and incident response (IR) triage script. Safely collects system logs, persistence mechanisms, and execution evidence into an AI-ready report.</p>
+                        <div class="tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">Forensics</span>
+                            <span class="tag">Incident Response</span>
+                            <span class="tag">Blue Team</span>
+                        </div>
+                    </div>
+
+                    <div class="project">
+                        <div class="project-title">
+                            <a href="https://github.com/Garuda8887/Noctua" target="_blank" rel="noopener noreferrer">Noctua</a>
+                        </div>
+                        <p>Offline, AI-powered Attack Surface Management (ASM) and pentesting tool leveraging local LLMs and live vulnerability feeds.</p>
+                        <div class="tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">LLM</span>
+                            <span class="tag">Ollama</span>
+                            <span class="tag">Nmap</span>
+                        </div>
+                    </div>
+
+                    <div class="project">
+                        <div class="project-title">
+                            <a href="https://github.com/Garuda8887/Checker" target="_blank" rel="noopener noreferrer">Checker</a>
+                        </div>
+                        <p>Parallelised OSINT scraper and media downloader with regex/keyword filtering, SFW/NSFW controls, and bulk downloads. Built for research and archiving — fast, scriptable, no GUI needed.</p>
+                        <div class="tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">OSINT</span>
+                            <span class="tag">CLI</span>
+                            <span class="tag">Parallel</span>
+                        </div>
+                    </div>
+
+                    <div class="project">
+                        <div class="project-title">
+                            <a href="https://github.com/Garuda8887/PortScout" target="_blank" rel="noopener noreferrer">PortScout</a>
+                        </div>
+                        <p>Terminal UI for scanning ports, identifying what's running, and reserving free ones — built with Textual for a proper interactive experience rather than a wall of raw output.</p>
+                        <div class="tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">Textual</span>
+                            <span class="tag">Networking</span>
+                            <span class="tag">TUI</span>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="project">
-                    <div class="project-title">
-                        <a href="https://github.com/Garuda8887/SlowCraft" target="_blank" rel="noopener noreferrer">SlowCraft</a>
+            <div class="category">
+                <h3 class="category-title">Learning &amp; Productivity</h3>
+                <div class="projects">
+                    <div class="project">
+                        <div class="project-title">
+                            <a href="https://github.com/Garuda8887/recall" target="_blank" rel="noopener noreferrer">Recall</a>
+                        </div>
+                        <p>Self-hosted spaced repetition calendar — SM-2 scheduling, forgetting curves, knowledge graph &amp; dark mode. Privacy-first Anki alternative for visual learners.</p>
+                        <div class="tags">
+                            <span class="tag">Node.js</span>
+                            <span class="tag">SQLite</span>
+                            <span class="tag">PWA</span>
+                            <span class="tag">Self-hosted</span>
+                        </div>
                     </div>
-                    <p>GPU-accelerated slow-motion generator using RIFE frame interpolation. Runs NCNN + Vulkan under the hood — real quality, not just lower playback speed. Simple GUI so anyone can use it.</p>
-                    <div class="tags">
-                        <span class="tag">Python</span>
-                        <span class="tag">RIFE</span>
-                        <span class="tag">NCNN</span>
-                        <span class="tag">Vulkan</span>
-                        <span class="tag">FFmpeg</span>
+
+                    <div class="project">
+                        <div class="project-title">
+                            <a href="https://github.com/Garuda8887/crucible" target="_blank" rel="noopener noreferrer">crucible</a>
+                        </div>
+                        <p>Competitive exam intelligence system — AI-powered flashcards, SRS, mock tests, mind maps, and study analytics.</p>
+                        <div class="tags">
+                            <span class="tag">AI</span>
+                            <span class="tag">SRS</span>
+                            <span class="tag">Study Tools</span>
+                        </div>
+                    </div>
+
+                    <div class="project">
+                        <div class="project-title">
+                            <a href="https://github.com/Garuda8887/tasklog" target="_blank" rel="noopener noreferrer">tasklog</a>
+                        </div>
+                        <p>Privacy-first task calendar with recurring tasks, streaks, time tracking, and more.</p>
+                        <div class="tags">
+                            <span class="tag">React</span>
+                            <span class="tag">TypeScript</span>
+                            <span class="tag">Vite</span>
+                            <span class="tag">PWA</span>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="project">
-                    <div class="project-title">
-                        <a href="https://github.com/Garuda8887/Checker" target="_blank" rel="noopener noreferrer">Checker</a>
+            <div class="category">
+                <h3 class="category-title">Utilities &amp; Dev Tools</h3>
+                <div class="projects">
+                    <div class="project">
+                        <div class="project-title">
+                            <a href="https://github.com/Garuda8887/fitcheck" target="_blank" rel="noopener noreferrer">fitcheck</a>
+                        </div>
+                        <p>Know before you prompt. A blazingly fast CLI tool that calculates exactly how many tokens your codebase costs, which LLM context windows it fits in, and detects bloat to optimize your AI prompts.</p>
+                        <div class="tags">
+                            <span class="tag">TypeScript</span>
+                            <span class="tag">CLI</span>
+                            <span class="tag">LLM</span>
+                            <span class="tag">Token Counter</span>
+                        </div>
                     </div>
-                    <p>Parallelised OSINT scraper and media downloader with regex/keyword filtering, SFW/NSFW controls, and bulk downloads. Built for research and archiving — fast, scriptable, no GUI needed.</p>
-                    <div class="tags">
-                        <span class="tag">Python</span>
-                        <span class="tag">OSINT</span>
-                        <span class="tag">CLI</span>
-                        <span class="tag">Parallel</span>
-                    </div>
-                </div>
 
-                <div class="project">
-                    <div class="project-title">
-                        <a href="https://github.com/Garuda8887/PortScout" target="_blank" rel="noopener noreferrer">PortScout</a>
+                    <div class="project">
+                        <div class="project-title">
+                            <a href="https://github.com/Garuda8887/iron-protocol" target="_blank" rel="noopener noreferrer">iron-protocol</a>
+                        </div>
+                        <p>Dynamic, ADHD-friendly workout app &amp; training tracker — a readiness engine that routes you to a daily lane instead of a rigid plan. Self-hosted, offline PWA.</p>
+                        <div class="tags">
+                            <span class="tag">Flask</span>
+                            <span class="tag">SQLite</span>
+                            <span class="tag">PWA</span>
+                            <span class="tag">Self-hosted</span>
+                        </div>
                     </div>
-                    <p>Terminal UI for scanning ports, identifying what's running, and reserving free ones — built with Textual for a proper interactive experience rather than a wall of raw output.</p>
-                    <div class="tags">
-                        <span class="tag">Python</span>
-                        <span class="tag">Textual</span>
-                        <span class="tag">Networking</span>
-                        <span class="tag">TUI</span>
+
+                    <div class="project">
+                        <div class="project-title">
+                            <a href="https://github.com/Garuda8887/lingolift" target="_blank" rel="noopener noreferrer">lingolift</a>
+                        </div>
+                        <p>A lightweight, open-source PDF translator with a user-friendly GUI — seamless translation of PDF content into multiple global languages.</p>
+                        <div class="tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">Tkinter</span>
+                            <span class="tag">PDF</span>
+                            <span class="tag">Translation</span>
+                        </div>
+                    </div>
+
+                    <div class="project">
+                        <div class="project-title">
+                            <a href="https://github.com/Garuda8887/Renamer" target="_blank" rel="noopener noreferrer">Renamer</a>
+                        </div>
+                        <p>A clean, open-source tool to batch rename photos and videos using real metadata — sort by file size, name, or actual date taken (EXIF). Simple GUI, no Python install needed.</p>
+                        <div class="tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">Tkinter</span>
+                            <span class="tag">EXIF</span>
+                        </div>
+                    </div>
+
+                    <div class="project">
+                        <div class="project-title">
+                            <a href="https://github.com/Garuda8887/SlowCraft" target="_blank" rel="noopener noreferrer">SlowCraft</a>
+                        </div>
+                        <p>GPU-accelerated slow-motion generator using RIFE frame interpolation. Runs NCNN + Vulkan under the hood — real quality, not just lower playback speed.</p>
+                        <div class="tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">RIFE</span>
+                            <span class="tag">NCNN</span>
+                            <span class="tag">Vulkan</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -281,6 +448,7 @@
             <div class="links">
                 <a class="link" href="https://github.com/Garuda8887" target="_blank" rel="noopener noreferrer">GitHub</a>
                 <a class="link" href="https://tryhackme.com/p/Garuda8887" target="_blank" rel="noopener noreferrer">TryHackMe</a>
+                <a class="link" href="https://github.com/Garuda8887/tutorials" target="_blank" rel="noopener noreferrer">Guides</a>
                 <a class="link" href="mailto:worthyocra8884@tuta.io">Email</a>
             </div>
         </section>
