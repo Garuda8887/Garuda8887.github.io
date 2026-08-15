@@ -128,23 +128,22 @@
 
         .typewriter {
             display: inline-block;
-            overflow: hidden;
             white-space: nowrap;
-            width: 5ch;
             border-right: 3px solid var(--accent);
             vertical-align: bottom;
+            clip-path: inset(0 0 0 0);
         }
 
         @media (prefers-reduced-motion: no-preference) {
             .typewriter {
-                width: 0;
+                clip-path: inset(0 100% 0 0);
                 animation: typing 0.7s steps(5) 0.3s forwards,
                            caret-blink 0.9s step-end 1s infinite;
             }
         }
 
         @keyframes typing {
-            to { width: 5ch; }
+            to { clip-path: inset(0 0 0 0); }
         }
 
         @keyframes caret-blink {
