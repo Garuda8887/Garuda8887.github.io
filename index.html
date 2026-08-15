@@ -3,10 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Garuda8887</title>
+    <title>Karan — Garuda8887</title>
+    <meta name="description" content="Karan — CS graduate, behavioural science background, privacy-first tools for real people.">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+        :root {
+            --accent: #6366F1;
+            --ink: #111111;
+            --muted: #555555;
+            --faint: #888888;
+            --bg: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --border: #EAEAEA;
+        }
+
         * {
             box-sizing: border-box;
         }
@@ -15,63 +26,268 @@
             margin: 0;
             padding: 0;
             font-family: 'Inter', sans-serif;
-            background-color: #FAFAFA;
-            color: #111111;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            background-color: var(--bg);
+            color: var(--ink);
             -webkit-font-smoothing: antialiased;
-        }
-
-        .container {
-            max-width: 640px;
-            padding: 2rem;
-            width: 100%;
-        }
-
-        h1 {
-            font-size: 2rem;
-            font-weight: 600;
-            margin: 0 0 0.5rem 0;
-            letter-spacing: -0.03em;
-        }
-
-        p {
-            font-size: 1.125rem;
-            font-weight: 400;
-            color: #555555;
-            margin: 0 0 2rem 0;
             line-height: 1.6;
         }
 
+        .wrap {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        code, .mono {
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Hero */
+        header.hero {
+            padding: 6rem 0 4rem;
+        }
+
+        .eyebrow {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: var(--accent);
+            margin: 0 0 0.75rem 0;
+        }
+
+        h1 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            margin: 0 0 0.75rem 0;
+            letter-spacing: -0.03em;
+        }
+
+        .tagline {
+            font-size: 1.15rem;
+            color: var(--muted);
+            margin: 0;
+            max-width: 32rem;
+        }
+
+        /* Sections */
+        section {
+            padding: 3rem 0;
+            border-top: 1px solid var(--border);
+        }
+
+        h2 {
+            font-size: 0.85rem;
+            font-family: 'Fira Code', monospace;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--faint);
+            margin: 0 0 1.75rem 0;
+        }
+
+        /* About */
+        .about p {
+            font-size: 1.05rem;
+            color: var(--ink);
+            margin: 0 0 1.25rem 0;
+        }
+
+        .about p:last-child {
+            margin-bottom: 0;
+        }
+
+        blockquote {
+            margin: 1.75rem 0 0 0;
+            padding-left: 1rem;
+            border-left: 2px solid var(--accent);
+            font-style: italic;
+            color: var(--muted);
+        }
+
+        /* Projects */
+        .projects {
+            display: grid;
+            gap: 1.25rem;
+        }
+
+        .project {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .project:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .project-title {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .project-title a {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--ink);
+            text-decoration: none;
+        }
+
+        .project-title a:hover {
+            color: var(--accent);
+        }
+
+        .project-title a::after {
+            content: " ↗";
+            font-size: 0.85em;
+            color: var(--faint);
+        }
+
+        .project p {
+            margin: 0 0 1rem 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: var(--accent);
+            background: rgba(99, 102, 241, 0.08);
+            border-radius: 5px;
+            padding: 0.2rem 0.55rem;
+        }
+
+        /* Contact */
         .links {
             display: flex;
+            flex-wrap: wrap;
             gap: 1.5rem;
         }
 
-        a {
-            color: #111111;
+        a.link {
+            color: var(--ink);
             text-decoration: none;
             font-weight: 500;
             font-size: 0.95rem;
             border-bottom: 1px solid rgba(17, 17, 17, 0.2);
             padding-bottom: 2px;
-            transition: border-color 0.2s ease;
+            transition: border-color 0.2s ease, color 0.2s ease;
         }
 
-        a:hover {
-            border-color: #111111;
+        a.link:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        footer {
+            padding: 3rem 0 4rem;
+            color: var(--faint);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 480px) {
+            .wrap { padding: 0 1.25rem; }
+            header.hero { padding: 4rem 0 2.5rem; }
+            h1 { font-size: 2.1rem; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Garuda8887</h1>
-        <p>Personal website under construction.</p>
-        <div class="links">
-            <a href="https://github.com/Garuda8887" target="_blank" rel="noopener noreferrer">GitHub</a>
-        </div>
+    <div class="wrap">
+        <header class="hero">
+            <p class="eyebrow">// hi, I'm</p>
+            <h1>Karan</h1>
+            <p class="tagline">CS graduate · Behavioural science · Privacy-first tools for real people.</p>
+        </header>
+
+        <section class="about">
+            <h2>About</h2>
+            <p>CS graduate with a background in behavioural science — including addiction psychiatry research at Harvard Medical School. I build privacy-first tools that are designed to actually be usable, not just by developers, but by anyone.</p>
+            <p>I believe the best software is invisible — it solves the problem without asking the user to understand how it works. That philosophy shows up in everything I build: clean interfaces, self-hosted by default, no unnecessary complexity. Deep into defensive cybersecurity, cognitive science applied to learning, and keeping data where it belongs — on your own hardware.</p>
+            <blockquote>I build for people first, developers second.</blockquote>
+        </section>
+
+        <section class="work">
+            <h2>Selected work</h2>
+            <div class="projects">
+                <div class="project">
+                    <div class="project-title">
+                        <a href="https://github.com/Garuda8887/recall" target="_blank" rel="noopener noreferrer">Recall</a>
+                    </div>
+                    <p>Self-hosted spaced repetition calendar built on the SM-2 algorithm — the same science behind how memory actually works. Forgetting curves, knowledge graph, drag-and-drop scheduling. Designed for visual thinkers, not flashcard power users.</p>
+                    <div class="tags">
+                        <span class="tag">Node.js</span>
+                        <span class="tag">SQLite</span>
+                        <span class="tag">Vanilla JS</span>
+                        <span class="tag">Self-hosted</span>
+                    </div>
+                </div>
+
+                <div class="project">
+                    <div class="project-title">
+                        <a href="https://github.com/Garuda8887/SlowCraft" target="_blank" rel="noopener noreferrer">SlowCraft</a>
+                    </div>
+                    <p>GPU-accelerated slow-motion generator using RIFE frame interpolation. Runs NCNN + Vulkan under the hood — real quality, not just lower playback speed. Simple GUI so anyone can use it.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">RIFE</span>
+                        <span class="tag">NCNN</span>
+                        <span class="tag">Vulkan</span>
+                        <span class="tag">FFmpeg</span>
+                    </div>
+                </div>
+
+                <div class="project">
+                    <div class="project-title">
+                        <a href="https://github.com/Garuda8887/Checker" target="_blank" rel="noopener noreferrer">Checker</a>
+                    </div>
+                    <p>Parallelised OSINT scraper and media downloader with regex/keyword filtering, SFW/NSFW controls, and bulk downloads. Built for research and archiving — fast, scriptable, no GUI needed.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">OSINT</span>
+                        <span class="tag">CLI</span>
+                        <span class="tag">Parallel</span>
+                    </div>
+                </div>
+
+                <div class="project">
+                    <div class="project-title">
+                        <a href="https://github.com/Garuda8887/PortScout" target="_blank" rel="noopener noreferrer">PortScout</a>
+                    </div>
+                    <p>Terminal UI for scanning ports, identifying what's running, and reserving free ones — built with Textual for a proper interactive experience rather than a wall of raw output.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Textual</span>
+                        <span class="tag">Networking</span>
+                        <span class="tag">TUI</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact">
+            <h2>Contact</h2>
+            <div class="links">
+                <a class="link" href="https://github.com/Garuda8887" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a class="link" href="https://tryhackme.com/p/Garuda8887" target="_blank" rel="noopener noreferrer">TryHackMe</a>
+                <a class="link" href="mailto:worthyocra8884@tuta.io">Email</a>
+            </div>
+        </section>
+
+        <footer>
+            &copy; 2026 Karan.
+        </footer>
     </div>
 </body>
 </html>
