@@ -311,6 +311,12 @@
             border-color: #d1d5db;
         }
 
+        .tag-founder {
+            color: var(--accent);
+            border-color: var(--accent);
+            font-weight: 600;
+        }
+
         /* Contact */
         .contact-links {
             display: flex;
@@ -416,6 +422,12 @@
             font-weight: 600;
             font-size: 1.25rem;
             letter-spacing: -0.01em;
+        }
+
+        .case-study-role {
+            font-weight: 500;
+            font-size: 1rem;
+            color: var(--accent);
         }
 
         .case-study-link {
@@ -668,6 +680,29 @@
                 </ol>
                 <p class="case-study-note">The constraint that shaped everything: a local LLM's context window is small, but a real engagement's attack surface isn't — the map-reduce step exists because the network doesn't get smaller to fit the model.</p>
             </div>
+
+            <div class="case-study reveal delay-3">
+                <div class="case-study-head">
+                    <span class="case-study-title">Recall</span>
+                    <a href="https://github.com/Garuda8887/recall" target="_blank" rel="noopener noreferrer" class="case-study-link">View repo ↗</a>
+                </div>
+                <p class="case-study-desc">Anki's spaced-repetition algorithm, wrapped in a calendar you actually want to open — because a scheduler only works if you show up to it.</p>
+                <ol class="case-study-steps">
+                    <li>Log a study session — topic, subject, and a confidence rating from Blank to Perfect</li>
+                    <li>SM-2 reschedules the next review from that rating and a per-topic ease-factor, not a fixed interval</li>
+                    <li>The session lands on a month-view calendar, feeds a per-topic forgetting-curve chart, and links into a knowledge graph of related sessions</li>
+                    <li>Missed reviews stay visibly overdue instead of vanishing; recurring topics auto-generate catch-up instances so nothing quietly falls off the schedule</li>
+                </ol>
+                <p class="case-study-note">Anki already has the SM-2 math — that part's a solved problem. The actual work was building a schedule someone wants to open, since a spaced-repetition system is only as good as whether you show up to it.</p>
+            </div>
+
+            <div class="case-study reveal delay-1">
+                <div class="case-study-head">
+                    <span class="case-study-title">Gradsphere <span class="case-study-role">— Co-founder</span></span>
+                    <a href="https://gradsphere-smoky.vercel.app/" target="_blank" rel="noopener noreferrer" class="case-study-link">Visit site ↗</a>
+                </div>
+                <p class="case-study-desc">A SaaS platform I co-founded and helped build to simplify the college application process for students navigating admissions.</p>
+            </div>
         </section>
 
         <section class="reveal" id="security">
@@ -830,8 +865,9 @@
                         <span class="project-title">Gradsphere</span>
                         <span class="project-arrow">↗</span>
                     </div>
-                    <p class="project-desc">A SaaS platform that simplifies the college application process for students navigating admissions.</p>
+                    <p class="project-desc">Co-founded and built to simplify the college application process for students navigating admissions.</p>
                     <div class="tags">
+                        <span class="tag tag-founder">Co-founder</span>
                         <span class="tag">SaaS</span>
                         <span class="tag">EdTech</span>
                     </div>
