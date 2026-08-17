@@ -360,6 +360,15 @@
             font-size: 0.75rem;
         }
 
+        /* Decrypt-on-reveal text */
+        .decrypt-char {
+            transition: color 0.15s ease;
+        }
+
+        .decrypt-char.scrambling {
+            color: var(--accent);
+        }
+
         /* Scroll Animations */
         .reveal {
             opacity: 0;
@@ -392,7 +401,7 @@
         <header class="reveal active">
             <div class="hero-content">
                 <h1>Karan<span class="dot">.</span></h1>
-                <p class="tagline">Security & privacy engineering. Behavioural science. Clean product design.</p>
+                <p class="tagline decrypt">Security & privacy engineering. Behavioural science. Clean product design.</p>
                 
                 <div class="about">
                     <p>CS graduate with a background in <span class="highlight">behavioural science</span> — including addiction psychiatry research at Harvard Medical School. I build <span class="highlight">privacy-first</span> tools that are designed to be truly usable.</p>
@@ -406,7 +415,7 @@
 
         <section class="reveal">
             <div class="section-header">
-                <h2>Security & Privacy</h2>
+                <h2 class="decrypt">Security & Privacy</h2>
                 <span class="section-sub">// Encryption, forensics, and offensive tooling</span>
             </div>
             
@@ -493,7 +502,7 @@
 
         <section class="reveal">
             <div class="section-header">
-                <h2>Behavioural Science & Learning</h2>
+                <h2 class="decrypt">Behavioural Science & Learning</h2>
                 <span class="section-sub">// Spaced repetition built into software</span>
             </div>
             
@@ -515,7 +524,7 @@
 
         <section class="reveal">
             <div class="section-header">
-                <h2>Product & Tooling</h2>
+                <h2 class="decrypt">Product & Tooling</h2>
                 <span class="section-sub">// Practical software people actually use</span>
             </div>
             
@@ -575,7 +584,7 @@
 
         <section class="reveal">
             <div class="section-header">
-                <h2>Connect</h2>
+                <h2 class="decrypt">Connect</h2>
                 <span class="section-sub">// Links & Contact</span>
             </div>
             
@@ -636,7 +645,83 @@
 
             const revealElements = document.querySelectorAll('.reveal');
             revealElements.forEach(el => observer.observe(el));
+
+            // Decrypt-on-reveal text
+            const heroTagline = document.querySelector('.tagline.decrypt');
+            if (heroTagline) {
+                setTimeout(() => decryptText(heroTagline), 300);
+            }
+
+            const decryptObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        decryptText(entry.target);
+                        decryptObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15 });
+
+            document.querySelectorAll('h2.decrypt').forEach(el => decryptObserver.observe(el));
         });
+
+        function decryptText(el) {
+            if (el.dataset.decrypted) return;
+            el.dataset.decrypted = 'true';
+
+            const text = el.textContent;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            el.setAttribute('aria-label', text);
+            el.textContent = '';
+
+            const wrapper = document.createElement('span');
+            wrapper.setAttribute('aria-hidden', 'true');
+            el.appendChild(wrapper);
+
+            const charset = '0123456789abcdef#$%&';
+            const chars = text.split('');
+            const spans = chars.map(ch => {
+                const span = document.createElement('span');
+                span.className = 'decrypt-char';
+                if (ch.trim() === '') {
+                    span.textContent = ch;
+                } else {
+                    span.textContent = charset[Math.floor(Math.random() * charset.length)];
+                    span.classList.add('scrambling');
+                }
+                wrapper.appendChild(span);
+                return span;
+            });
+
+            const targetIndices = [];
+            spans.forEach((span, i) => {
+                if (span.classList.contains('scrambling')) targetIndices.push(i);
+            });
+            for (let i = targetIndices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [targetIndices[i], targetIndices[j]] = [targetIndices[j], targetIndices[i]];
+            }
+
+            const totalDuration = Math.min(200 + targetIndices.length * 12, 500);
+            const stepDelay = targetIndices.length ? totalDuration / targetIndices.length : 0;
+
+            const flicker = setInterval(() => {
+                spans.forEach(span => {
+                    if (span.classList.contains('scrambling')) {
+                        span.textContent = charset[Math.floor(Math.random() * charset.length)];
+                    }
+                });
+            }, 40);
+
+            targetIndices.forEach((idx, order) => {
+                setTimeout(() => {
+                    spans[idx].textContent = chars[idx];
+                    spans[idx].classList.remove('scrambling');
+                }, order * stepDelay);
+            });
+
+            setTimeout(() => clearInterval(flicker), totalDuration + 50);
+        }
     </script>
 </body>
 </html>
