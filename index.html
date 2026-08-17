@@ -17,7 +17,7 @@
     <meta name="twitter:image" content="https://garuda8887.github.io/assets/og-image.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #FAFAFA;
@@ -30,6 +30,7 @@
             --accent-soft: rgba(255, 59, 48, 0.08);
             
             --font-sans: 'Inter', system-ui, sans-serif;
+            --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
 
@@ -51,23 +52,6 @@
         ::selection {
             background: var(--ink);
             color: var(--bg);
-        }
-
-        /* Subtle grid background for the edge */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-image: 
-                linear-gradient(to right, var(--border) 1px, transparent 1px),
-                linear-gradient(to bottom, var(--border) 1px, transparent 1px);
-            background-size: 40px 40px;
-            opacity: 0.4;
-            z-index: -1;
-            pointer-events: none;
         }
 
         a {
@@ -95,43 +79,112 @@
             align-items: center;
         }
         
-        .hero-image-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1 / 1;
+        /* Hero demo — a real AES-256-GCM encrypt in the browser, not a stock graphic */
+        .hero-demo {
             border: 1px solid var(--border);
-            overflow: hidden;
             background: var(--surface);
+            padding: 1.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            font-family: var(--font-mono);
         }
-        
-        .hero-image-container::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
+
+        .hero-demo-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-demo-title {
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .hero-demo-badge {
+            font-size: 0.7rem;
+            color: var(--accent);
+        }
+
+        .hero-demo-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .hero-demo-input {
             width: 100%;
-            height: 100%;
-            border: 3px solid transparent;
-            transition: border-color 0.4s ease;
-            pointer-events: none;
-            box-sizing: border-box;
+            resize: none;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--ink);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 0.75rem;
+            outline: none;
         }
-        
-        .hero-image-container:hover::after {
+
+        .hero-demo-input:focus-visible {
             border-color: var(--accent);
         }
 
-        .hero-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: grayscale(100%) contrast(1.05);
-            transition: filter 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        .hero-demo-out {
+            border: 1px solid var(--border);
+            background: var(--bg);
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
         }
 
-        .hero-image-container:hover .hero-image {
-            filter: grayscale(0%) contrast(1.1);
-            transform: scale(1.03);
+        .hero-demo-out-label {
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+
+        .hero-demo-cipher {
+            font-size: 0.78rem;
+            word-break: break-all;
+            color: var(--ink);
+            transition: opacity 0.2s ease;
+        }
+
+        .hero-demo-cipher.burning {
+            opacity: 0.15;
+        }
+
+        .hero-demo-burn {
+            align-self: flex-start;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--muted);
+            background: transparent;
+            border: 1px solid var(--border);
+            padding: 0.5rem 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .hero-demo-burn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .hero-demo-note {
+            font-size: 0.78rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .hero-demo-note a {
+            text-decoration: underline;
+            text-decoration-color: var(--border);
+        }
+
+        .hero-demo-note a:hover {
+            color: var(--accent);
+            text-decoration-color: var(--accent);
         }
 
         .hero-content {
@@ -140,6 +193,7 @@
         }
 
         h1 {
+            font-family: var(--font-display);
             font-size: clamp(3rem, 6vw, 4.5rem);
             font-weight: 700;
             letter-spacing: -0.04em;
@@ -206,6 +260,7 @@
         }
 
         h2 {
+            font-family: var(--font-display);
             font-size: 1.5rem;
             font-weight: 600;
             letter-spacing: -0.02em;
@@ -266,6 +321,7 @@
         }
 
         .project-title {
+            font-family: var(--font-display);
             font-weight: 600;
             font-size: 1.25rem;
             letter-spacing: -0.01em;
@@ -309,12 +365,6 @@
         
         .project-card:hover .tag {
             border-color: #d1d5db;
-        }
-
-        .tag-founder {
-            color: var(--accent);
-            border-color: var(--accent);
-            font-weight: 600;
         }
 
         /* Contact */
@@ -419,6 +469,7 @@
         }
 
         .case-study-title {
+            font-family: var(--font-display);
             font-weight: 600;
             font-size: 1.25rem;
             letter-spacing: -0.01em;
@@ -675,7 +726,7 @@
         @media (max-width: 768px) {
             .container { padding: 3rem 1.5rem; }
             header { grid-template-columns: 1fr; gap: 2rem; margin-bottom: 5rem; }
-            .hero-image-container { aspect-ratio: 16 / 9; max-width: 100%; order: -1; }
+            .hero-demo { order: -1; }
             h1 { font-size: 2.5rem; }
             .project-grid { grid-template-columns: 1fr; }
             .section-header { flex-direction: column; gap: 0.25rem; }
@@ -700,8 +751,19 @@
                     <p>I believe the best software is invisible. Clean interfaces, <span class="highlight">self-hosted by default</span>, and zero unnecessary complexity. Deep into defensive cybersecurity, cognitive science, and keeping data where it belongs — on your own hardware.</p>
                 </div>
             </div>
-            <div class="hero-image-container">
-                <img src="assets/hero.jpg" alt="Abstract representation of security and engineering" class="hero-image">
+            <div class="hero-demo">
+                <div class="hero-demo-head">
+                    <span class="hero-demo-title">encrypt.local</span>
+                    <span class="hero-demo-badge">AES-256-GCM · in your browser</span>
+                </div>
+                <label for="demo-input" class="hero-demo-label">Type a secret —</label>
+                <textarea id="demo-input" class="hero-demo-input" placeholder="nothing leaves this tab" rows="3" spellcheck="false" autocomplete="off"></textarea>
+                <div class="hero-demo-out">
+                    <span class="hero-demo-out-label">ciphertext</span>
+                    <code id="demo-cipher" class="hero-demo-cipher">—</code>
+                </div>
+                <button type="button" id="demo-burn" class="hero-demo-burn">Burn &amp; rotate key</button>
+                <p class="hero-demo-note">The actual technique behind <a href="#featured">whisperdrop</a> — the key is generated in this tab and never sent anywhere; ciphertext is all a server would ever see.</p>
             </div>
         </header>
 
@@ -827,20 +889,7 @@
             </div>
             
             <div class="project-grid">
-                <a href="https://github.com/Garuda8887/whisperdrop" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-1">
-                    <div class="project-top">
-                        <span class="project-title">whisperdrop</span>
-                        <span class="project-arrow">↗</span>
-                    </div>
-                    <p class="project-desc">A zero-knowledge, burn-after-reading pastebin. Secrets are encrypted client-side with AES-256-GCM and self-destruct after one view.</p>
-                    <div class="tags">
-                        <span class="tag">JavaScript</span>
-                        <span class="tag">AES-256-GCM</span>
-                        <span class="tag">Zero-knowledge</span>
-                    </div>
-                </a>
-
-                <a href="https://github.com/Garuda8887/DropZone" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-2">
+                <a href="https://github.com/Garuda8887/DropZone" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-1">
                     <div class="project-top">
                         <span class="project-title">DropZone</span>
                         <span class="project-arrow">↗</span>
@@ -853,7 +902,7 @@
                     </div>
                 </a>
 
-                <a href="https://github.com/Garuda8887/linux-forensics-collector" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-3">
+                <a href="https://github.com/Garuda8887/linux-forensics-collector" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-2">
                     <div class="project-top">
                         <span class="project-title">linux-forensics-collector</span>
                         <span class="project-arrow">↗</span>
@@ -866,20 +915,7 @@
                     </div>
                 </a>
 
-                <a href="https://github.com/Garuda8887/Noctua" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-1">
-                    <div class="project-top">
-                        <span class="project-title">Noctua</span>
-                        <span class="project-arrow">↗</span>
-                    </div>
-                    <p class="project-desc">Offline, AI-powered Attack Surface Management (ASM) and pentesting tool leveraging local LLMs and live vulnerability feeds.</p>
-                    <div class="tags">
-                        <span class="tag">Python</span>
-                        <span class="tag">LLM</span>
-                        <span class="tag">Nmap</span>
-                    </div>
-                </a>
-
-                <a href="https://github.com/Garuda8887/Checker" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-2">
+                <a href="https://github.com/Garuda8887/Checker" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-3">
                     <div class="project-top">
                         <span class="project-title">Checker</span>
                         <span class="project-arrow">↗</span>
@@ -892,7 +928,7 @@
                     </div>
                 </a>
 
-                <a href="https://github.com/Garuda8887/PortScout" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-3">
+                <a href="https://github.com/Garuda8887/PortScout" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-1">
                     <div class="project-top">
                         <span class="project-title">PortScout</span>
                         <span class="project-arrow">↗</span>
@@ -902,28 +938,6 @@
                         <span class="tag">Python</span>
                         <span class="tag">Textual</span>
                         <span class="tag">TUI</span>
-                    </div>
-                </a>
-            </div>
-        </section>
-
-        <section class="reveal" id="behavioural">
-            <div class="section-header">
-                <h2 class="decrypt">Behavioural Science & Learning</h2>
-                <span class="section-sub">// Spaced repetition built into software</span>
-            </div>
-            
-            <div class="project-grid">
-                <a href="https://github.com/Garuda8887/recall" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-1">
-                    <div class="project-top">
-                        <span class="project-title">Recall</span>
-                        <span class="project-arrow">↗</span>
-                    </div>
-                    <p class="project-desc">Self-hosted spaced repetition calendar — SM-2 scheduling, forgetting curves, knowledge graph. Privacy-first Anki alternative.</p>
-                    <div class="tags">
-                        <span class="tag">Node.js</span>
-                        <span class="tag">SQLite</span>
-                        <span class="tag">PWA</span>
                     </div>
                 </a>
             </div>
@@ -972,19 +986,6 @@
                         <span class="tag">Python</span>
                         <span class="tag">EXIF</span>
                         <span class="tag">GUI</span>
-                    </div>
-                </a>
-                
-                <a href="https://gradsphere-smoky.vercel.app/" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-1">
-                    <div class="project-top">
-                        <span class="project-title">Gradsphere</span>
-                        <span class="project-arrow">↗</span>
-                    </div>
-                    <p class="project-desc">Co-founded and built to simplify the college application process for students navigating admissions.</p>
-                    <div class="tags">
-                        <span class="tag tag-founder">Co-founder</span>
-                        <span class="tag">SaaS</span>
-                        <span class="tag">EdTech</span>
                     </div>
                 </a>
             </div>
@@ -1047,6 +1048,49 @@
         }
         updateTime();
         setInterval(updateTime, 60000);
+
+        // Hero demo — real client-side AES-256-GCM via the Web Crypto API
+        (async function initHeroDemo() {
+            const input = document.getElementById('demo-input');
+            const out = document.getElementById('demo-cipher');
+            const burnBtn = document.getElementById('demo-burn');
+            if (!input || !out || !burnBtn || !window.crypto?.subtle) return;
+
+            function toHex(buf) {
+                return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+            console.assert(toHex(new Uint8Array([0, 255, 16]).buffer) === '00ff10', 'hero demo hex encoding broken');
+
+            let key = null;
+            async function rotateKey() {
+                key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, ['encrypt']);
+            }
+
+            async function render() {
+                const text = input.value;
+                if (!text) { out.textContent = '—'; return; }
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                const data = new TextEncoder().encode(text);
+                const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
+                out.textContent = `${toHex(iv)}:${toHex(ciphertext)}`;
+            }
+
+            let debounceId;
+            input.addEventListener('input', () => {
+                clearTimeout(debounceId);
+                debounceId = setTimeout(render, 60);
+            });
+
+            burnBtn.addEventListener('click', async () => {
+                out.classList.add('burning');
+                input.value = '';
+                await rotateKey();
+                setTimeout(() => { out.textContent = '—'; out.classList.remove('burning'); }, 150);
+                input.focus();
+            });
+
+            await rotateKey();
+        })();
 
         // Scroll Animations (Intersection Observer)
         document.addEventListener("DOMContentLoaded", function() {
