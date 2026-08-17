@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work — Karan</title>
+    <meta name="description" content="Case studies and projects — security tooling, behavioural-science software, and product builds by Karan.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none';">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://garuda8887.github.io/work.html">
+    <meta property="og:title" content="Work — Karan">
+    <meta property="og:description" content="Case studies and projects — security tooling, behavioural-science software, and product builds by Karan.">
+    <meta property="og:image" content="https://garuda8887.github.io/assets/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Work — Karan">
+    <meta name="twitter:description" content="Case studies and projects — security tooling, behavioural-science software, and product builds by Karan.">
+    <meta name="twitter:image" content="https://garuda8887.github.io/assets/og-image.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="index.html" class="nav-brand">Karan<span class="dot">.</span></a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="work.html" aria-current="page">Work</a>
+                <a href="index.html#connect">Connect</a>
+            </div>
+        </nav>
+
+        <header class="work-header reveal active">
+            <h1 class="work-title">Work<span class="dot">.</span></h1>
+            <p class="work-subtitle">Case studies and the rest of the shelf — security tooling, spaced-repetition software, and product builds.</p>
+        </header>
+
+        <section class="reveal" id="featured">
+            <div class="section-header">
+                <h2 class="decrypt">Featured Builds</h2>
+                <span class="section-sub">// Systems worth the extra detail</span>
+            </div>
+
+            <div class="case-study reveal delay-1" id="whisperdrop">
+                <div class="case-study-head">
+                    <span class="case-study-title">whisperdrop</span>
+                    <a href="https://github.com/Garuda8887/whisperdrop" target="_blank" rel="noopener noreferrer" class="case-study-link">View repo ↗</a>
+                </div>
+                <p class="case-study-desc">A burn-after-reading pastebin where the server never sees the plaintext — it can't decrypt what it stores even if it wanted to.</p>
+                <div class="case-study-media">
+                    <div class="case-study-shots">
+                        <div class="case-study-shot">
+                            <img src="assets/screenshots/whisperdrop-create.png" alt="WhisperDrop's compose screen — paste a secret, encrypt, and get a link" loading="lazy">
+                        </div>
+                        <div class="case-study-shot">
+                            <img src="assets/screenshots/whisperdrop-burned.png" alt="Opening the same link a second time — the paste is already burned" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="case-study-body">
+                        <div class="flow">
+                            <span class="flow-step">encrypt in browser</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">ciphertext + IV → server</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step flow-key">key rides in URL #fragment</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">burn on read</span>
+                        </div>
+                        <ol class="case-study-steps">
+                            <li>Browser generates a random AES-256-GCM key and encrypts the text locally, via the Web Crypto API</li>
+                            <li>Only ciphertext and an IV are sent to the server — the key itself never leaves the browser</li>
+                            <li>The share link carries the key after a <code>#</code> — URL fragments are never sent in HTTP requests, so it never touches a server log</li>
+                            <li>Opening the link decrypts locally, then the server deletes the paste immediately — a second visit returns "not found"</li>
+                        </ol>
+                        <p class="case-study-note">The hard part wasn't the encryption — it was designing the server to be provably unable to help, not just promising not to.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="case-study reveal delay-2" id="noctua">
+                <div class="case-study-head">
+                    <span class="case-study-title">Noctua</span>
+                    <a href="https://github.com/Garuda8887/Noctua" target="_blank" rel="noopener noreferrer" class="case-study-link">View repo ↗</a>
+                </div>
+                <p class="case-study-desc">An offline attack-surface management tool built for air-gapped and confidential pentest engagements — network topology never leaves the machine.</p>
+                <div class="flow">
+                    <span class="flow-step">Nmap scan</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">deterministic checks (EOL / creds / KEV)</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step flow-key">local LLM synthesis (map-reduce)</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">interactive HTML report</span>
+                </div>
+                <ol class="case-study-steps">
+                    <li>Ingests an Nmap scan (or runs one directly) against the target subnet</li>
+                    <li>A deterministic engine flags end-of-life software, default credentials, and known-exploited vulnerabilities against locally cached feeds</li>
+                    <li>A local Ollama model synthesizes the findings into attack narratives, using map-reduce chunking so enterprise-sized scans don't overrun a small local context window</li>
+                    <li>Everything renders into a self-contained, interactive HTML network graph — no cloud call at any step</li>
+                </ol>
+                <p class="case-study-note">The constraint that shaped everything: a local LLM's context window is small, but a real engagement's attack surface isn't — the map-reduce step exists because the network doesn't get smaller to fit the model.</p>
+            </div>
+
+            <div class="case-study reveal delay-3" id="recall">
+                <div class="case-study-head">
+                    <span class="case-study-title">Recall</span>
+                    <a href="https://github.com/Garuda8887/recall" target="_blank" rel="noopener noreferrer" class="case-study-link">View repo ↗</a>
+                </div>
+                <p class="case-study-desc">Anki's spaced-repetition algorithm, wrapped in a calendar you actually want to open — because a scheduler only works if you show up to it.</p>
+                <div class="case-study-media">
+                    <div class="case-study-shots">
+                        <div class="case-study-shot">
+                            <img src="assets/screenshots/recall-calendar.png" alt="Recall's month-view calendar with color-coded review chips and a study streak" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="case-study-body">
+                        <div class="flow">
+                            <span class="flow-step">log session + rating</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">SM-2 reschedules</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">calendar / forgetting curve / graph</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step flow-key">stays visible, auto catch-up</span>
+                        </div>
+                        <ol class="case-study-steps">
+                            <li>Log a study session — topic, subject, and a confidence rating from Blank to Perfect</li>
+                            <li>SM-2 reschedules the next review from that rating and a per-topic ease-factor, not a fixed interval</li>
+                            <li>The session lands on a month-view calendar, feeds a per-topic forgetting-curve chart, and links into a knowledge graph of related sessions</li>
+                            <li>Missed reviews stay visibly overdue instead of vanishing; recurring topics auto-generate catch-up instances so nothing quietly falls off the schedule</li>
+                        </ol>
+                        <p class="case-study-note">Anki already has the SM-2 math — that part's a solved problem. The actual work was building a schedule someone wants to open, since a spaced-repetition system is only as good as whether you show up to it.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="case-study reveal delay-1" id="gradsphere">
+                <div class="case-study-head">
+                    <span class="case-study-title">Gradsphere <span class="case-study-role">— Co-founder</span></span>
+                    <a href="https://gradsphere-smoky.vercel.app/" target="_blank" rel="noopener noreferrer" class="case-study-link">Visit site ↗</a>
+                </div>
+                <p class="case-study-desc">A SaaS platform I co-founded and helped build to simplify the college application process for students navigating admissions.</p>
+                <div class="flow">
+                    <span class="flow-step">explore programs</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">track requirements & deadlines</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">apply</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="reveal" id="security">
+            <div class="section-header">
+                <h2 class="decrypt">Security & Privacy</h2>
+                <span class="section-sub">// Encryption, forensics, and offensive tooling</span>
+            </div>
+
+            <div class="project-grid">
+                <a href="https://github.com/Garuda8887/DropZone" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-1">
+                    <div class="project-top">
+                        <span class="project-title">DropZone</span>
+                        <span class="project-arrow">↗</span>
+                    </div>
+                    <p class="project-desc">Secure, peer-to-peer file transfer in the browser using WebRTC — no uploads, no size limits, no accounts.</p>
+                    <div class="tags">
+                        <span class="tag">WebRTC</span>
+                        <span class="tag">P2P</span>
+                        <span class="tag">Socket.io</span>
+                    </div>
+                </a>
+
+                <a href="https://github.com/Garuda8887/linux-forensics-collector" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-2">
+                    <div class="project-top">
+                        <span class="project-title">linux-forensics-collector</span>
+                        <span class="project-arrow">↗</span>
+                    </div>
+                    <p class="project-desc">Zero-dependency, automated Linux forensics triage script. Safely collects system logs and execution evidence into an AI-ready report.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Forensics</span>
+                        <span class="tag">Blue Team</span>
+                    </div>
+                </a>
+
+                <a href="https://github.com/Garuda8887/Checker" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-3">
+                    <div class="project-top">
+                        <span class="project-title">Checker</span>
+                        <span class="project-arrow">↗</span>
+                    </div>
+                    <p class="project-desc">Parallelised OSINT scraper and media downloader with regex filtering. Built for research and archiving — fast, scriptable.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">OSINT</span>
+                        <span class="tag">Parallel</span>
+                    </div>
+                </a>
+
+                <a href="https://github.com/Garuda8887/PortScout" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-1">
+                    <div class="project-top">
+                        <span class="project-title">PortScout</span>
+                        <span class="project-arrow">↗</span>
+                    </div>
+                    <p class="project-desc">Terminal UI for scanning ports, identifying what's running, and reserving free ones. Built with Textual for a proper interactive experience.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Textual</span>
+                        <span class="tag">TUI</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section class="reveal" id="product">
+            <div class="section-header">
+                <h2 class="decrypt">Product & Tooling</h2>
+                <span class="section-sub">// Practical software people actually use</span>
+            </div>
+
+            <div class="project-grid">
+                <a href="https://github.com/Garuda8887/fitcheck" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-1">
+                    <div class="project-top">
+                        <span class="project-title">fitcheck</span>
+                        <span class="project-arrow">↗</span>
+                    </div>
+                    <p class="project-desc">Know before you prompt. A blazingly fast CLI tool that calculates codebase token costs and detects bloat to optimize AI prompts.</p>
+                    <div class="tags">
+                        <span class="tag">TypeScript</span>
+                        <span class="tag">CLI</span>
+                        <span class="tag">LLM</span>
+                    </div>
+                </a>
+
+                <a href="https://github.com/Garuda8887/lingolift" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-2">
+                    <div class="project-top">
+                        <span class="project-title">lingolift</span>
+                        <span class="project-arrow">↗</span>
+                    </div>
+                    <p class="project-desc">A lightweight, open-source PDF translator with a user-friendly GUI. Seamless translation into multiple global languages.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Tkinter</span>
+                        <span class="tag">PDF</span>
+                    </div>
+                </a>
+
+                <a href="https://github.com/Garuda8887/Renamer" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-3">
+                    <div class="project-top">
+                        <span class="project-title">Renamer</span>
+                        <span class="project-arrow">↗</span>
+                    </div>
+                    <p class="project-desc">Batch rename photos and videos using real metadata (EXIF). Sort by file size, name, or actual date taken. Simple GUI.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">EXIF</span>
+                        <span class="tag">GUI</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-main">
+                <span>© 2026 Karan. Built with precision.</span>
+                <span class="footer-time" id="local-time"></span>
+            </div>
+            <div class="footer-meta">
+                <span class="footer-mono">Static hosting · zero analytics · zero trackers · restrictive CSP · <a href="/.well-known/security.txt">security.txt</a></span>
+            </div>
+        </footer>
+    </div>
+
+    <dialog id="cmdk" class="cmdk">
+        <input type="text" id="cmdk-input" class="cmdk-input" placeholder="Jump to a section or link..." autocomplete="off" spellcheck="false">
+        <ul id="cmdk-list" class="cmdk-list"></ul>
+    </dialog>
+
+    <button type="button" id="cmdk-hint" class="cmdk-hint" aria-label="Open quick navigation">
+        <span>Jump to</span>
+        <kbd>⌘K</kbd>
+    </button>
+
+    <script src="assets/site.js"></script>
+</body>
+</html>
