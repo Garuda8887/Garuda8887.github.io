@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Karan — Security & Privacy Engineering</title>
     <meta name="description" content="Karan — CS graduate, behavioural science background, privacy-first tools for real people.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none';">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://garuda8887.github.io/">
+    <meta property="og:title" content="Karan — Security & Privacy Engineering">
+    <meta property="og:description" content="CS graduate, behavioural science background, privacy-first tools for real people.">
+    <meta property="og:image" content="https://garuda8887.github.io/assets/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Karan — Security & Privacy Engineering">
+    <meta name="twitter:description" content="CS graduate, behavioural science background, privacy-first tools for real people.">
+    <meta name="twitter:image" content="https://garuda8887.github.io/assets/og-image.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -348,16 +358,214 @@
             margin-top: 8rem;
             padding-top: 2rem;
             border-top: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        .footer-main {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.875rem;
-            color: var(--muted);
         }
 
         .footer-time {
             font-family: var(--font-mono);
             font-size: 0.75rem;
+        }
+
+        .footer-meta {
+            margin-top: 0.75rem;
+        }
+
+        .footer-mono {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .footer-mono a {
+            text-decoration: underline;
+            text-decoration-color: var(--border);
+            text-underline-offset: 2px;
+        }
+
+        .footer-mono a:hover {
+            color: var(--accent);
+            text-decoration-color: var(--accent);
+        }
+
+        /* Featured case studies */
+        .case-study {
+            border: 1px solid var(--border);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .case-study:last-child {
+            margin-bottom: 0;
+        }
+
+        .case-study-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.75rem;
+        }
+
+        .case-study-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+            letter-spacing: -0.01em;
+        }
+
+        .case-study-link {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--muted);
+            transition: color 0.2s ease;
+        }
+
+        .case-study-link:hover {
+            color: var(--accent);
+        }
+
+        .case-study-desc {
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+            max-width: 60ch;
+        }
+
+        .case-study-steps {
+            list-style: none;
+            counter-reset: step;
+            margin-bottom: 1.5rem;
+        }
+
+        .case-study-steps li {
+            counter-increment: step;
+            position: relative;
+            padding-left: 2.5rem;
+            margin-bottom: 0.9rem;
+            font-size: 0.95rem;
+        }
+
+        .case-study-steps li:last-child {
+            margin-bottom: 0;
+        }
+
+        .case-study-steps li::before {
+            content: counter(step, decimal-leading-zero);
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--accent);
+        }
+
+        .case-study-steps code {
+            font-family: var(--font-mono);
+            font-size: 0.85em;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 0.1rem 0.35rem;
+        }
+
+        .case-study-note {
+            font-size: 0.9rem;
+            color: var(--ink);
+            border-left: 2px solid var(--accent);
+            padding-left: 1rem;
+        }
+
+        /* Command palette (Cmd+K) */
+        .cmdk {
+            width: min(560px, 90vw);
+            padding: 0;
+            border: 1px solid var(--border);
+            border-radius: 0;
+            box-shadow: 0 24px 48px rgba(17, 24, 39, 0.16);
+        }
+
+        .cmdk::backdrop {
+            background: rgba(17, 24, 39, 0.5);
+        }
+
+        .cmdk-input {
+            width: 100%;
+            padding: 1.1rem 1.25rem;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            outline: none;
+            color: var(--ink);
+        }
+
+        .cmdk-list {
+            list-style: none;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .cmdk-list li {
+            padding: 0.85rem 1.25rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 1rem;
+        }
+
+        .cmdk-list li .cmdk-item-sub {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .cmdk-list li.active {
+            background: var(--surface-hover);
+        }
+
+        .cmdk-list li.active .cmdk-item-sub {
+            color: var(--accent);
+        }
+
+        .cmdk-list .cmdk-empty {
+            color: var(--muted);
+            cursor: default;
+        }
+
+        .cmdk-hint {
+            position: fixed;
+            right: 1.5rem;
+            bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 0.5rem 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--muted);
+            cursor: pointer;
+            transition: border-color 0.2s ease, color 0.2s ease;
+            z-index: 10;
+        }
+
+        .cmdk-hint:hover {
+            border-color: var(--ink);
+            color: var(--ink);
+        }
+
+        .cmdk-hint kbd {
+            font-family: var(--font-mono);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 0.1rem 0.35rem;
+            font-size: 0.7rem;
         }
 
         /* Decrypt-on-reveal text */
@@ -386,6 +594,14 @@
         .reveal.delay-2 { transition-delay: 0.2s; }
         .reveal.delay-3 { transition-delay: 0.3s; }
 
+        @media (prefers-reduced-motion: reduce) {
+            .reveal {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+        }
+
         @media (max-width: 768px) {
             .container { padding: 3rem 1.5rem; }
             header { grid-template-columns: 1fr; gap: 2rem; margin-bottom: 5rem; }
@@ -393,6 +609,10 @@
             h1 { font-size: 2.5rem; }
             .project-grid { grid-template-columns: 1fr; }
             .section-header { flex-direction: column; gap: 0.25rem; }
+            .case-study { padding: 1.5rem; }
+            .case-study-head { flex-direction: column; gap: 0.35rem; }
+            .footer-main { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            .cmdk-hint span { display: none; }
         }
     </style>
 </head>
@@ -413,7 +633,44 @@
             </div>
         </header>
 
-        <section class="reveal">
+        <section class="reveal" id="featured">
+            <div class="section-header">
+                <h2 class="decrypt">Featured Builds</h2>
+                <span class="section-sub">// Two systems worth the extra detail</span>
+            </div>
+
+            <div class="case-study reveal delay-1">
+                <div class="case-study-head">
+                    <span class="case-study-title">whisperdrop</span>
+                    <a href="https://github.com/Garuda8887/whisperdrop" target="_blank" rel="noopener noreferrer" class="case-study-link">View repo ↗</a>
+                </div>
+                <p class="case-study-desc">A burn-after-reading pastebin where the server never sees the plaintext — it can't decrypt what it stores even if it wanted to.</p>
+                <ol class="case-study-steps">
+                    <li>Browser generates a random AES-256-GCM key and encrypts the text locally, via the Web Crypto API</li>
+                    <li>Only ciphertext and an IV are sent to the server — the key itself never leaves the browser</li>
+                    <li>The share link carries the key after a <code>#</code> — URL fragments are never sent in HTTP requests, so it never touches a server log</li>
+                    <li>Opening the link decrypts locally, then the server deletes the paste immediately — a second visit returns "not found"</li>
+                </ol>
+                <p class="case-study-note">The hard part wasn't the encryption — it was designing the server to be provably unable to help, not just promising not to.</p>
+            </div>
+
+            <div class="case-study reveal delay-2">
+                <div class="case-study-head">
+                    <span class="case-study-title">Noctua</span>
+                    <a href="https://github.com/Garuda8887/Noctua" target="_blank" rel="noopener noreferrer" class="case-study-link">View repo ↗</a>
+                </div>
+                <p class="case-study-desc">An offline attack-surface management tool built for air-gapped and confidential pentest engagements — network topology never leaves the machine.</p>
+                <ol class="case-study-steps">
+                    <li>Ingests an Nmap scan (or runs one directly) against the target subnet</li>
+                    <li>A deterministic engine flags end-of-life software, default credentials, and known-exploited vulnerabilities against locally cached feeds</li>
+                    <li>A local Ollama model synthesizes the findings into attack narratives, using map-reduce chunking so enterprise-sized scans don't overrun a small local context window</li>
+                    <li>Everything renders into a self-contained, interactive HTML network graph — no cloud call at any step</li>
+                </ol>
+                <p class="case-study-note">The constraint that shaped everything: a local LLM's context window is small, but a real engagement's attack surface isn't — the map-reduce step exists because the network doesn't get smaller to fit the model.</p>
+            </div>
+        </section>
+
+        <section class="reveal" id="security">
             <div class="section-header">
                 <h2 class="decrypt">Security & Privacy</h2>
                 <span class="section-sub">// Encryption, forensics, and offensive tooling</span>
@@ -500,7 +757,7 @@
             </div>
         </section>
 
-        <section class="reveal">
+        <section class="reveal" id="behavioural">
             <div class="section-header">
                 <h2 class="decrypt">Behavioural Science & Learning</h2>
                 <span class="section-sub">// Spaced repetition built into software</span>
@@ -522,7 +779,7 @@
             </div>
         </section>
 
-        <section class="reveal">
+        <section class="reveal" id="product">
             <div class="section-header">
                 <h2 class="decrypt">Product & Tooling</h2>
                 <span class="section-sub">// Practical software people actually use</span>
@@ -582,7 +839,7 @@
             </div>
         </section>
 
-        <section class="reveal">
+        <section class="reveal" id="connect">
             <div class="section-header">
                 <h2 class="decrypt">Connect</h2>
                 <span class="section-sub">// Links & Contact</span>
@@ -609,10 +866,25 @@
         </section>
 
         <footer>
-            <span>© 2026 Karan. Built with precision.</span>
-            <span class="footer-time" id="local-time"></span>
+            <div class="footer-main">
+                <span>© 2026 Karan. Built with precision.</span>
+                <span class="footer-time" id="local-time"></span>
+            </div>
+            <div class="footer-meta">
+                <span class="footer-mono">Static hosting · zero analytics · zero trackers · restrictive CSP · <a href="/.well-known/security.txt">security.txt</a></span>
+            </div>
         </footer>
     </div>
+
+    <dialog id="cmdk" class="cmdk">
+        <input type="text" id="cmdk-input" class="cmdk-input" placeholder="Jump to a section or link..." autocomplete="off" spellcheck="false">
+        <ul id="cmdk-list" class="cmdk-list"></ul>
+    </dialog>
+
+    <button type="button" id="cmdk-hint" class="cmdk-hint" aria-label="Open quick navigation">
+        <span>Jump to</span>
+        <kbd>⌘K</kbd>
+    </button>
 
     <script>
         // Update local time
@@ -722,6 +994,132 @@
 
             setTimeout(() => clearInterval(flicker), totalDuration + 50);
         }
+
+        // Command palette (Cmd/Ctrl+K)
+        document.addEventListener("DOMContentLoaded", function() {
+            const dialog = document.getElementById('cmdk');
+            const input = document.getElementById('cmdk-input');
+            const list = document.getElementById('cmdk-list');
+            const hint = document.getElementById('cmdk-hint');
+            if (!dialog || !input || !list) return;
+
+            function buildItems() {
+                const items = [];
+
+                document.querySelectorAll('section[id] > .section-header > h2').forEach(h2 => {
+                    items.push({
+                        label: h2.getAttribute('aria-label') || h2.textContent,
+                        sub: 'section',
+                        action: () => h2.closest('section').scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    });
+                });
+
+                document.querySelectorAll('.project-card').forEach(card => {
+                    const title = card.querySelector('.project-title');
+                    if (!title) return;
+                    items.push({
+                        label: title.textContent,
+                        sub: 'project ↗',
+                        action: () => window.open(card.href, '_blank', 'noopener,noreferrer')
+                    });
+                });
+
+                document.querySelectorAll('.contact-link').forEach(link => {
+                    const label = link.querySelector('.contact-label');
+                    if (!label) return;
+                    items.push({
+                        label: label.textContent,
+                        sub: 'link ↗',
+                        action: () => window.open(link.href, '_blank', 'noopener,noreferrer')
+                    });
+                });
+
+                return items;
+            }
+
+            const allItems = buildItems();
+            let filtered = allItems;
+            let activeIndex = 0;
+
+            function render() {
+                list.innerHTML = '';
+                if (filtered.length === 0) {
+                    const li = document.createElement('li');
+                    li.className = 'cmdk-empty';
+                    li.textContent = 'No matches';
+                    list.appendChild(li);
+                    return;
+                }
+                filtered.forEach((item, i) => {
+                    const li = document.createElement('li');
+                    li.className = i === activeIndex ? 'active' : '';
+                    const label = document.createElement('span');
+                    label.textContent = item.label;
+                    const sub = document.createElement('span');
+                    sub.className = 'cmdk-item-sub';
+                    sub.textContent = item.sub;
+                    li.appendChild(label);
+                    li.appendChild(sub);
+                    li.addEventListener('click', () => selectItem(i));
+                    list.appendChild(li);
+                });
+            }
+
+            function selectItem(i) {
+                const item = filtered[i];
+                if (!item) return;
+                dialog.close();
+                item.action();
+            }
+
+            function openPalette() {
+                filtered = allItems;
+                activeIndex = 0;
+                input.value = '';
+                render();
+                dialog.showModal();
+                input.focus();
+            }
+
+            input.addEventListener('input', () => {
+                const q = input.value.trim().toLowerCase();
+                filtered = q ? allItems.filter(item => item.label.toLowerCase().includes(q)) : allItems;
+                activeIndex = 0;
+                render();
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    activeIndex = Math.min(activeIndex + 1, filtered.length - 1);
+                    render();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    activeIndex = Math.max(activeIndex - 1, 0);
+                    render();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    selectItem(activeIndex);
+                }
+            });
+
+            dialog.addEventListener('click', (e) => {
+                if (e.target === dialog) dialog.close();
+            });
+
+            if (hint) hint.addEventListener('click', openPalette);
+
+            document.addEventListener('keydown', (e) => {
+                if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                    e.preventDefault();
+                    if (dialog.open) {
+                        dialog.close();
+                    } else {
+                        openPalette();
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>

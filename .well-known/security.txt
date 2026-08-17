@@ -1,0 +1,4 @@
+Contact: mailto:worthyocra8884@tuta.io
+Expires: 2027-08-17T00:00:00.000Z
+Canonical: https://garuda8887.github.io/.well-known/security.txt
+Preferred-Languages: en
