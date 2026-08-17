@@ -490,6 +490,64 @@
             padding-left: 1rem;
         }
 
+        .case-study-media {
+            display: grid;
+            grid-template-columns: minmax(180px, 240px) 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .case-study-shots {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .case-study-shot {
+            border: 1px solid var(--border);
+            overflow: hidden;
+            background: var(--bg);
+        }
+
+        .case-study-shot img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .case-study-body {
+            min-width: 0;
+        }
+
+        /* Flow chips — compact visual summary above the detailed steps */
+        .flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .flow-step {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.7rem;
+            background: var(--bg);
+            white-space: nowrap;
+        }
+
+        .flow-step.flow-key {
+            border-color: var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .flow-arrow {
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
         /* Command palette (Cmd+K) */
         .cmdk {
             width: min(560px, 90vw);
@@ -623,6 +681,8 @@
             .section-header { flex-direction: column; gap: 0.25rem; }
             .case-study { padding: 1.5rem; }
             .case-study-head { flex-direction: column; gap: 0.35rem; }
+            .case-study-media { grid-template-columns: 1fr; }
+            .case-study-shots { flex-direction: row; }
             .footer-main { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
             .cmdk-hint span { display: none; }
         }
@@ -648,7 +708,7 @@
         <section class="reveal" id="featured">
             <div class="section-header">
                 <h2 class="decrypt">Featured Builds</h2>
-                <span class="section-sub">// Two systems worth the extra detail</span>
+                <span class="section-sub">// Systems worth the extra detail</span>
             </div>
 
             <div class="case-study reveal delay-1">
@@ -657,13 +717,34 @@
                     <a href="https://github.com/Garuda8887/whisperdrop" target="_blank" rel="noopener noreferrer" class="case-study-link">View repo ↗</a>
                 </div>
                 <p class="case-study-desc">A burn-after-reading pastebin where the server never sees the plaintext — it can't decrypt what it stores even if it wanted to.</p>
-                <ol class="case-study-steps">
-                    <li>Browser generates a random AES-256-GCM key and encrypts the text locally, via the Web Crypto API</li>
-                    <li>Only ciphertext and an IV are sent to the server — the key itself never leaves the browser</li>
-                    <li>The share link carries the key after a <code>#</code> — URL fragments are never sent in HTTP requests, so it never touches a server log</li>
-                    <li>Opening the link decrypts locally, then the server deletes the paste immediately — a second visit returns "not found"</li>
-                </ol>
-                <p class="case-study-note">The hard part wasn't the encryption — it was designing the server to be provably unable to help, not just promising not to.</p>
+                <div class="case-study-media">
+                    <div class="case-study-shots">
+                        <div class="case-study-shot">
+                            <img src="assets/screenshots/whisperdrop-create.png" alt="WhisperDrop's compose screen — paste a secret, encrypt, and get a link" loading="lazy">
+                        </div>
+                        <div class="case-study-shot">
+                            <img src="assets/screenshots/whisperdrop-burned.png" alt="Opening the same link a second time — the paste is already burned" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="case-study-body">
+                        <div class="flow">
+                            <span class="flow-step">encrypt in browser</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">ciphertext + IV → server</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step flow-key">key rides in URL #fragment</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">burn on read</span>
+                        </div>
+                        <ol class="case-study-steps">
+                            <li>Browser generates a random AES-256-GCM key and encrypts the text locally, via the Web Crypto API</li>
+                            <li>Only ciphertext and an IV are sent to the server — the key itself never leaves the browser</li>
+                            <li>The share link carries the key after a <code>#</code> — URL fragments are never sent in HTTP requests, so it never touches a server log</li>
+                            <li>Opening the link decrypts locally, then the server deletes the paste immediately — a second visit returns "not found"</li>
+                        </ol>
+                        <p class="case-study-note">The hard part wasn't the encryption — it was designing the server to be provably unable to help, not just promising not to.</p>
+                    </div>
+                </div>
             </div>
 
             <div class="case-study reveal delay-2">
@@ -672,6 +753,15 @@
                     <a href="https://github.com/Garuda8887/Noctua" target="_blank" rel="noopener noreferrer" class="case-study-link">View repo ↗</a>
                 </div>
                 <p class="case-study-desc">An offline attack-surface management tool built for air-gapped and confidential pentest engagements — network topology never leaves the machine.</p>
+                <div class="flow">
+                    <span class="flow-step">Nmap scan</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">deterministic checks (EOL / creds / KEV)</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step flow-key">local LLM synthesis (map-reduce)</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">interactive HTML report</span>
+                </div>
                 <ol class="case-study-steps">
                     <li>Ingests an Nmap scan (or runs one directly) against the target subnet</li>
                     <li>A deterministic engine flags end-of-life software, default credentials, and known-exploited vulnerabilities against locally cached feeds</li>
@@ -687,13 +777,31 @@
                     <a href="https://github.com/Garuda8887/recall" target="_blank" rel="noopener noreferrer" class="case-study-link">View repo ↗</a>
                 </div>
                 <p class="case-study-desc">Anki's spaced-repetition algorithm, wrapped in a calendar you actually want to open — because a scheduler only works if you show up to it.</p>
-                <ol class="case-study-steps">
-                    <li>Log a study session — topic, subject, and a confidence rating from Blank to Perfect</li>
-                    <li>SM-2 reschedules the next review from that rating and a per-topic ease-factor, not a fixed interval</li>
-                    <li>The session lands on a month-view calendar, feeds a per-topic forgetting-curve chart, and links into a knowledge graph of related sessions</li>
-                    <li>Missed reviews stay visibly overdue instead of vanishing; recurring topics auto-generate catch-up instances so nothing quietly falls off the schedule</li>
-                </ol>
-                <p class="case-study-note">Anki already has the SM-2 math — that part's a solved problem. The actual work was building a schedule someone wants to open, since a spaced-repetition system is only as good as whether you show up to it.</p>
+                <div class="case-study-media">
+                    <div class="case-study-shots">
+                        <div class="case-study-shot">
+                            <img src="assets/screenshots/recall-calendar.png" alt="Recall's month-view calendar with color-coded review chips and a study streak" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="case-study-body">
+                        <div class="flow">
+                            <span class="flow-step">log session + rating</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">SM-2 reschedules</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">calendar / forgetting curve / graph</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step flow-key">stays visible, auto catch-up</span>
+                        </div>
+                        <ol class="case-study-steps">
+                            <li>Log a study session — topic, subject, and a confidence rating from Blank to Perfect</li>
+                            <li>SM-2 reschedules the next review from that rating and a per-topic ease-factor, not a fixed interval</li>
+                            <li>The session lands on a month-view calendar, feeds a per-topic forgetting-curve chart, and links into a knowledge graph of related sessions</li>
+                            <li>Missed reviews stay visibly overdue instead of vanishing; recurring topics auto-generate catch-up instances so nothing quietly falls off the schedule</li>
+                        </ol>
+                        <p class="case-study-note">Anki already has the SM-2 math — that part's a solved problem. The actual work was building a schedule someone wants to open, since a spaced-repetition system is only as good as whether you show up to it.</p>
+                    </div>
+                </div>
             </div>
 
             <div class="case-study reveal delay-1">
@@ -702,6 +810,13 @@
                     <a href="https://gradsphere-smoky.vercel.app/" target="_blank" rel="noopener noreferrer" class="case-study-link">Visit site ↗</a>
                 </div>
                 <p class="case-study-desc">A SaaS platform I co-founded and helped build to simplify the college application process for students navigating admissions.</p>
+                <div class="flow">
+                    <span class="flow-step">explore programs</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">track requirements & deadlines</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">apply</span>
+                </div>
             </div>
         </section>
 
