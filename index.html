@@ -17,7 +17,7 @@
     <meta name="twitter:image" content="https://garuda8887.github.io/assets/og-image.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -48,6 +48,7 @@
                 </div>
                 <label for="demo-input" class="hero-demo-label">Type a secret —</label>
                 <textarea id="demo-input" class="hero-demo-input" placeholder="nothing leaves this tab" rows="3" spellcheck="false" autocomplete="off"></textarea>
+                <canvas id="demo-wave" class="hero-demo-wave" width="480" height="72" aria-hidden="true"></canvas>
                 <div class="hero-demo-out">
                     <span class="hero-demo-out-label">ciphertext</span>
                     <code id="demo-cipher" class="hero-demo-cipher">—</code>
@@ -59,7 +60,7 @@
 
         <section class="reveal" id="work">
             <div class="section-header">
-                <h2 class="decrypt">Selected Work</h2>
+                <h2 class="decrypt">CH.1 SELECTED WORK</h2>
                 <span class="section-sub">// Full write-ups on the Work page</span>
             </div>
 
@@ -122,7 +123,7 @@
 
         <section class="reveal" id="connect">
             <div class="section-header">
-                <h2 class="decrypt">Connect</h2>
+                <h2 class="decrypt">CH.2 CONNECT</h2>
                 <span class="section-sub">// Links & Contact</span>
             </div>
 
@@ -168,12 +169,61 @@
     </button>
 
     <script>
-        // Hero demo — real client-side AES-256-GCM via the Web Crypto API
+        // Hero demo — real client-side AES-256-GCM via the Web Crypto API,
+        // visualized as a waveform trace of the actual ciphertext bytes
         (async function initHeroDemo() {
             const input = document.getElementById('demo-input');
             const out = document.getElementById('demo-cipher');
             const burnBtn = document.getElementById('demo-burn');
-            if (!input || !out || !burnBtn || !window.crypto?.subtle) return;
+            const canvas = document.getElementById('demo-wave');
+            if (!input || !out || !burnBtn || !canvas || !window.crypto?.subtle) return;
+
+            const TRACE_A = '#4FD1C5';
+            const TRACE_B = '#D97757';
+            const TRACE_IDLE = 'rgba(231, 236, 239, 0.15)';
+
+            const ctx = canvas.getContext('2d');
+            let lastBytes = new Uint8Array(0);
+
+            function sizeCanvas() {
+                const rect = canvas.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = Math.round(rect.width * dpr);
+                canvas.height = Math.round(rect.height * dpr);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+
+            function drawWave(bytes, color) {
+                const w = canvas.clientWidth;
+                const h = canvas.clientHeight;
+                ctx.clearRect(0, 0, w, h);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                if (!bytes.length) {
+                    ctx.moveTo(0, h / 2);
+                    ctx.lineTo(w, h / 2);
+                } else {
+                    bytes.forEach((b, i) => {
+                        const x = (i / Math.max(bytes.length - 1, 1)) * w;
+                        const y = h / 2 - ((b - 128) / 128) * (h / 2 * 0.85);
+                        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    });
+                }
+                ctx.stroke();
+            }
+
+            sizeCanvas();
+            drawWave(lastBytes, TRACE_IDLE);
+
+            let resizeId;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeId);
+                resizeId = setTimeout(() => {
+                    sizeCanvas();
+                    drawWave(lastBytes, lastBytes.length ? TRACE_A : TRACE_IDLE);
+                }, 150);
+            });
 
             function toHex(buf) {
                 return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
@@ -187,11 +237,18 @@
 
             async function render() {
                 const text = input.value;
-                if (!text) { out.textContent = '—'; return; }
+                if (!text) {
+                    out.textContent = '—';
+                    lastBytes = new Uint8Array(0);
+                    drawWave(lastBytes, TRACE_IDLE);
+                    return;
+                }
                 const iv = crypto.getRandomValues(new Uint8Array(12));
                 const data = new TextEncoder().encode(text);
                 const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
                 out.textContent = `${toHex(iv)}:${toHex(ciphertext)}`;
+                lastBytes = new Uint8Array(ciphertext);
+                drawWave(lastBytes, TRACE_A);
             }
 
             let debounceId;
@@ -202,9 +259,15 @@
 
             burnBtn.addEventListener('click', async () => {
                 out.classList.add('burning');
+                drawWave(lastBytes, TRACE_B);
                 input.value = '';
                 await rotateKey();
-                setTimeout(() => { out.textContent = '—'; out.classList.remove('burning'); }, 150);
+                setTimeout(() => {
+                    out.textContent = '—';
+                    out.classList.remove('burning');
+                    lastBytes = new Uint8Array(0);
+                    drawWave(lastBytes, TRACE_IDLE);
+                }, 150);
                 input.focus();
             });
 
