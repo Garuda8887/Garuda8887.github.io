@@ -1,0 +1,1802 @@
+# Portfolio Multi-Page Restructure Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Split the single-page portfolio (`index.html`) into a thin `index.html` identity page and a `work.html` page holding all project depth, with the shared CSS/JS extracted into `assets/style.css` and `assets/site.js` so nothing is duplicated across the two pages.
+
+**Architecture:** Two static HTML documents share one stylesheet and one behavior script. `index.html` keeps identity (name, tagline, about, the live crypto demo) plus a condensed "Selected Work" teaser and Connect. `work.html` gets a short page header plus the 4 full case studies (each with an `id` for deep-linking) and the two category grids, unchanged in content. A small nav (`Home` / `Work` / `Connect`) is added to both pages since Cmd+K alone isn't discoverable enough to replace real cross-page navigation.
+
+**Tech Stack:** Plain HTML/CSS/JS, no build step, no framework, no test runner. GitHub Pages static hosting. Verification uses `node --check` for JS syntax and a small one-off Node link-checker script (not committed — this repo has no test suite and doesn't need one for two static pages).
+
+**Spec:** `docs/superpowers/specs/2026-08-17-portfolio-multipage-restructure-design.md`
+
+## Global Constraints
+
+- No content is deleted or rewritten — this is section relocation, not a copy rewrite (spec: "Site map"), except the new condensed one-line teaser cards on the homepage, which reuse existing case-study description text verbatim.
+- No visual redesign — colors, type, motion, the crypto demo's behavior, and case-study copy are unchanged (spec: "Out of scope").
+- No per-case-study pages — one `work.html` holds all 4 case studies (spec: "Out of scope").
+- No static-site generator or build step — plain HTML/CSS/JS (spec: "Out of scope").
+- Cmd+K stays page-scoped — it indexes whatever's on the current page, no cross-page fetch/index (spec: "Cmd+K behavior").
+- The CSP `<meta>` tag is a per-document header and must be duplicated identically on `work.html`, not just inherited via the shared stylesheet/script (spec: "Testing / verification").
+
+---
+
+## File Structure
+
+- Create: `assets/style.css` — full design system (tokens, layout, components, responsive rules) extracted from `index.html`'s current `<style>` block, plus new nav / work-page-header / "see all work" link styles.
+- Create: `assets/site.js` — page-agnostic behavior extracted from `index.html`'s current `<script>` block: footer clock, scroll-reveal, decrypt-on-reveal text, Cmd+K palette (with a small addition so it also indexes case studies by id).
+- Modify: `index.html` — becomes the thin homepage: nav, header (unchanged hero content + hero-demo), new "Selected Work" teaser section, unchanged Connect section, unchanged footer, links to the two shared asset files, hero-demo script stays inline (page-specific, not worth generalizing).
+- Create: `work.html` — nav, a short work-page header, the 4 case studies (now each with an `id`), the two category grids (unchanged), footer, Cmd+K dialog markup, links to the two shared asset files.
+
+---
+
+### Task 1: Extract shared stylesheet
+
+**Files:**
+- Create: `assets/style.css`
+- Modify: `index.html:21-739` (the `<style>...</style>` block — removed in Task 3, not here; this task only creates the new file)
+
+**Interfaces:**
+- Produces: CSS custom properties `--bg`, `--surface`, `--surface-hover`, `--ink`, `--muted`, `--border`, `--accent`, `--accent-soft`, `--font-sans`, `--font-display`, `--font-mono` on `:root`, and every existing selector unchanged (`.hero-demo*`, `.hero-content`, `h1`, `.tagline`, `.about`, `.highlight`, `section`, `.section-header`, `h2`, `.section-sub`, `.project-grid`, `.project-card*`, `.project-top`, `.project-title`, `.project-arrow`, `.project-desc`, `.tags`, `.tag`, `.contact-*`, `footer`, `.footer-*`, `.case-study*`, `.flow*`, `.cmdk*`, `.decrypt-char*`, `.reveal*`). Adds new selectors: `.nav`, `.nav-brand`, `.nav-links`, `.nav-links a`, `.work-more`, `.work-header`, `.work-title`, `.work-title .dot`, `.work-subtitle`.
+
+- [ ] **Step 1: Create `assets/style.css` with the full extracted + new CSS**
+
+```css
+:root {
+    --bg: #FAFAFA;
+    --surface: #FFFFFF;
+    --surface-hover: #F3F4F6;
+    --ink: #111827;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+    --accent: #FF3B30; /* Edgy sharp accent */
+    --accent-soft: rgba(255, 59, 48, 0.08);
+
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+    background: var(--ink);
+    color: var(--bg);
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.container {
+    max-width: 1000px; /* Slightly wider for the two column hero */
+    margin: 0 auto;
+    padding: 4rem 2rem 6rem;
+}
+
+/* Nav — shared across every page */
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+
+.nav-brand {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--ink);
+}
+
+.nav-brand .dot {
+    color: var(--accent);
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    color: var(--muted);
+    transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: var(--ink);
+}
+
+.nav-links a[aria-current="page"] {
+    color: var(--accent);
+}
+
+/* Header / Hero */
+header {
+    margin-bottom: 7rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+/* Hero demo — a real AES-256-GCM encrypt in the browser, not a stock graphic */
+.hero-demo {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    font-family: var(--font-mono);
+}
+
+.hero-demo-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.hero-demo-title {
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.hero-demo-badge {
+    font-size: 0.7rem;
+    color: var(--accent);
+}
+
+.hero-demo-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+
+.hero-demo-input {
+    width: 100%;
+    resize: none;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    padding: 0.75rem;
+    outline: none;
+}
+
+.hero-demo-input:focus-visible {
+    border-color: var(--accent);
+}
+
+.hero-demo-out {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.hero-demo-out-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+}
+
+.hero-demo-cipher {
+    font-size: 0.78rem;
+    word-break: break-all;
+    color: var(--ink);
+    transition: opacity 0.2s ease;
+}
+
+.hero-demo-cipher.burning {
+    opacity: 0.15;
+}
+
+.hero-demo-burn {
+    align-self: flex-start;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.hero-demo-burn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.hero-demo-note {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.hero-demo-note a {
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+}
+
+.hero-demo-note a:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+}
+
+.hero-content {
+    display: flex;
+    flex-direction: column;
+}
+
+h1 {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 6vw, 4.5rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    color: var(--ink);
+}
+
+h1 .dot {
+    color: var(--accent);
+}
+
+.tagline {
+    font-size: clamp(1.1rem, 2.5vw, 1.25rem);
+    color: var(--muted);
+    font-weight: 300;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.about {
+    font-size: 1.05rem;
+    color: var(--ink);
+}
+
+.about p {
+    margin-bottom: 1.25rem;
+}
+
+.highlight {
+    font-weight: 500;
+    position: relative;
+    display: inline-block;
+}
+
+.highlight::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--accent-soft);
+    z-index: -1;
+    transition: height 0.2s ease;
+}
+
+.highlight:hover::after {
+    height: 100%;
+}
+
+/* Sections */
+section {
+    margin-bottom: 6rem;
+}
+
+.section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.section-sub {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--muted);
+}
+
+/* Work page header (work.html only) */
+.work-header {
+    margin-bottom: 4rem;
+}
+
+.work-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.75rem;
+    color: var(--ink);
+}
+
+.work-title .dot {
+    color: var(--accent);
+}
+
+.work-subtitle {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 60ch;
+}
+
+/* Grid Layout for Projects */
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.project-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+    border-radius: 0; /* Sharp corners for edge */
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    z-index: 1;
+}
+
+.project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 0%;
+    background: var(--accent);
+    transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 2;
+}
+
+.project-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 12px 12px 0 rgba(17, 24, 39, 0.04);
+    border-color: var(--ink);
+}
+
+.project-card:hover::before {
+    height: 100%;
+}
+
+.project-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.project-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.25rem;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.project-arrow {
+    color: var(--muted);
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.project-card:hover .project-arrow {
+    transform: translate(2px, -2px);
+    color: var(--accent);
+}
+
+.project-desc {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.tag {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 0.25rem 0.5rem;
+}
+
+.project-card:hover .tag {
+    border-color: #d1d5db;
+}
+
+.work-more {
+    margin-top: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+
+.work-more a {
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+}
+
+.work-more a:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+}
+
+/* Contact */
+.contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+}
+
+.contact-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.contact-link:hover {
+    background: var(--ink);
+    color: var(--surface);
+    border-color: var(--ink);
+    transform: translateX(4px);
+}
+
+.contact-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.contact-mono {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+
+.contact-link:hover .contact-mono {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Footer */
+footer {
+    margin-top: 8rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.875rem;
+    color: var(--muted);
+}
+
+.footer-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-time {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+}
+
+.footer-meta {
+    margin-top: 0.75rem;
+}
+
+.footer-mono {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+
+.footer-mono a {
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 2px;
+}
+
+.footer-mono a:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+}
+
+/* Featured case studies (work.html) */
+.case-study {
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.case-study:last-child {
+    margin-bottom: 0;
+}
+
+.case-study-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.75rem;
+}
+
+.case-study-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.25rem;
+    letter-spacing: -0.01em;
+}
+
+.case-study-role {
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--accent);
+}
+
+.case-study-link {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+    transition: color 0.2s ease;
+}
+
+.case-study-link:hover {
+    color: var(--accent);
+}
+
+.case-study-desc {
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    max-width: 60ch;
+}
+
+.case-study-steps {
+    list-style: none;
+    counter-reset: step;
+    margin-bottom: 1.5rem;
+}
+
+.case-study-steps li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 2.5rem;
+    margin-bottom: 0.9rem;
+    font-size: 0.95rem;
+}
+
+.case-study-steps li:last-child {
+    margin-bottom: 0;
+}
+
+.case-study-steps li::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+}
+
+.case-study-steps code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 0.1rem 0.35rem;
+}
+
+.case-study-note {
+    font-size: 0.9rem;
+    color: var(--ink);
+    border-left: 2px solid var(--accent);
+    padding-left: 1rem;
+}
+
+.case-study-media {
+    display: grid;
+    grid-template-columns: minmax(180px, 240px) 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.case-study-shots {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.case-study-shot {
+    border: 1px solid var(--border);
+    overflow: hidden;
+    background: var(--bg);
+}
+
+.case-study-shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.case-study-body {
+    min-width: 0;
+}
+
+/* Flow chips — compact visual summary above the detailed steps */
+.flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.flow-step {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.7rem;
+    background: var(--bg);
+    white-space: nowrap;
+}
+
+.flow-step.flow-key {
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.flow-arrow {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+/* Command palette (Cmd+K) */
+.cmdk {
+    width: min(560px, 90vw);
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    box-shadow: 0 24px 48px rgba(17, 24, 39, 0.16);
+}
+
+.cmdk::backdrop {
+    background: rgba(17, 24, 39, 0.5);
+}
+
+.cmdk-input {
+    width: 100%;
+    padding: 1.1rem 1.25rem;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    outline: none;
+    color: var(--ink);
+}
+
+.cmdk-list {
+    list-style: none;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.cmdk-list li {
+    padding: 0.85rem 1.25rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+}
+
+.cmdk-list li .cmdk-item-sub {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.cmdk-list li.active {
+    background: var(--surface-hover);
+}
+
+.cmdk-list li.active .cmdk-item-sub {
+    color: var(--accent);
+}
+
+.cmdk-list .cmdk-empty {
+    color: var(--muted);
+    cursor: default;
+}
+
+.cmdk-hint {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+    z-index: 10;
+}
+
+.cmdk-hint:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+}
+
+.cmdk-hint kbd {
+    font-family: var(--font-mono);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 0.1rem 0.35rem;
+    font-size: 0.7rem;
+}
+
+/* Decrypt-on-reveal text */
+.decrypt-char {
+    transition: color 0.15s ease;
+}
+
+.decrypt-char.scrambling {
+    color: var(--accent);
+}
+
+/* Scroll Animations */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Ensure header reveals on load if it's a reveal element */
+.reveal.delay-1 { transition-delay: 0.1s; }
+.reveal.delay-2 { transition-delay: 0.2s; }
+.reveal.delay-3 { transition-delay: 0.3s; }
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .container { padding: 3rem 1.5rem; }
+    .nav { flex-wrap: wrap; gap: 0.75rem; }
+    header { grid-template-columns: 1fr; gap: 2rem; margin-bottom: 5rem; }
+    h1 { font-size: 2.5rem; }
+    .project-grid { grid-template-columns: 1fr; }
+    .section-header { flex-direction: column; gap: 0.25rem; }
+    .case-study { padding: 1.5rem; }
+    .case-study-head { flex-direction: column; gap: 0.35rem; }
+    .case-study-media { grid-template-columns: 1fr; }
+    .case-study-shots { flex-direction: row; }
+    .footer-main { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .cmdk-hint span { display: none; }
+}
+```
+
+- [ ] **Step 2: Verify the CSS is syntactically valid (brace-balanced, no stray tokens)**
+
+Run:
+```bash
+node -e "
+const fs = require('fs');
+const css = fs.readFileSync('assets/style.css', 'utf8');
+const open = (css.match(/\{/g) || []).length;
+const close = (css.match(/\}/g) || []).length;
+if (open !== close) { console.error('Brace mismatch:', open, 'open vs', close, 'close'); process.exit(1); }
+console.log('OK —', open, 'rules, braces balanced');
+"
+```
+Expected: `OK — <N> rules, braces balanced` (no mismatch error).
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add assets/style.css
+git commit -m "Extract shared stylesheet into assets/style.css"
+```
+
+---
+
+### Task 2: Extract shared behavior script
+
+**Files:**
+- Create: `assets/site.js`
+
+**Interfaces:**
+- Consumes: DOM elements with ids `local-time`, `cmdk`, `cmdk-input`, `cmdk-list`, `cmdk-hint`; elements with classes `.reveal`, `.tagline.decrypt`, `h2.decrypt`, `.project-card`, `.contact-link`, `.case-study[id]` (new), `.case-study-title`.
+- Produces: global function `decryptText(el)` (used only internally, but kept as a named function like the original); no exports needed since this is a plain `<script src>`, not a module.
+
+- [ ] **Step 1: Create `assets/site.js`**
+
+```js
+// Update local time
+function updateTime() {
+    const el = document.getElementById('local-time');
+    if (!el) return;
+    const now = new Date();
+    el.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
+}
+updateTime();
+setInterval(updateTime, 60000);
+
+// Scroll Animations (Intersection Observer)
+document.addEventListener("DOMContentLoaded", function() {
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.15
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            }
+        });
+    }, observerOptions);
+
+    const revealElements = document.querySelectorAll('.reveal');
+    revealElements.forEach(el => observer.observe(el));
+
+    // Decrypt-on-reveal text
+    const heroTagline = document.querySelector('.tagline.decrypt');
+    if (heroTagline) {
+        setTimeout(() => decryptText(heroTagline), 300);
+    }
+
+    const decryptObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                decryptText(entry.target);
+                decryptObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('h2.decrypt').forEach(el => decryptObserver.observe(el));
+});
+
+function decryptText(el) {
+    if (el.dataset.decrypted) return;
+    el.dataset.decrypted = 'true';
+
+    const text = el.textContent;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    el.setAttribute('aria-label', text);
+    el.textContent = '';
+
+    const wrapper = document.createElement('span');
+    wrapper.setAttribute('aria-hidden', 'true');
+    el.appendChild(wrapper);
+
+    const charset = '0123456789abcdef#$%&';
+    const chars = text.split('');
+    const spans = chars.map(ch => {
+        const span = document.createElement('span');
+        span.className = 'decrypt-char';
+        if (ch.trim() === '') {
+            span.textContent = ch;
+        } else {
+            span.textContent = charset[Math.floor(Math.random() * charset.length)];
+            span.classList.add('scrambling');
+        }
+        wrapper.appendChild(span);
+        return span;
+    });
+
+    const targetIndices = [];
+    spans.forEach((span, i) => {
+        if (span.classList.contains('scrambling')) targetIndices.push(i);
+    });
+    for (let i = targetIndices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [targetIndices[i], targetIndices[j]] = [targetIndices[j], targetIndices[i]];
+    }
+
+    const totalDuration = Math.min(200 + targetIndices.length * 12, 500);
+    const stepDelay = targetIndices.length ? totalDuration / targetIndices.length : 0;
+
+    const flicker = setInterval(() => {
+        spans.forEach(span => {
+            if (span.classList.contains('scrambling')) {
+                span.textContent = charset[Math.floor(Math.random() * charset.length)];
+            }
+        });
+    }, 40);
+
+    targetIndices.forEach((idx, order) => {
+        setTimeout(() => {
+            spans[idx].textContent = chars[idx];
+            spans[idx].classList.remove('scrambling');
+        }, order * stepDelay);
+    });
+
+    setTimeout(() => clearInterval(flicker), totalDuration + 50);
+}
+
+// Command palette (Cmd/Ctrl+K)
+document.addEventListener("DOMContentLoaded", function() {
+    const dialog = document.getElementById('cmdk');
+    const input = document.getElementById('cmdk-input');
+    const list = document.getElementById('cmdk-list');
+    const hint = document.getElementById('cmdk-hint');
+    if (!dialog || !input || !list) return;
+
+    function buildItems() {
+        const items = [];
+
+        document.querySelectorAll('section[id] > .section-header > h2').forEach(h2 => {
+            items.push({
+                label: h2.getAttribute('aria-label') || h2.textContent,
+                sub: 'section',
+                action: () => h2.closest('section').scrollIntoView({ behavior: 'smooth', block: 'start' })
+            });
+        });
+
+        document.querySelectorAll('.case-study[id]').forEach(cs => {
+            const title = cs.querySelector('.case-study-title');
+            if (!title) return;
+            items.push({
+                label: title.textContent,
+                sub: 'case study →',
+                action: () => cs.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            });
+        });
+
+        document.querySelectorAll('.project-card').forEach(card => {
+            const title = card.querySelector('.project-title');
+            if (!title) return;
+            items.push({
+                label: title.textContent,
+                sub: 'project ↗',
+                action: () => window.open(card.href, '_blank', 'noopener,noreferrer')
+            });
+        });
+
+        document.querySelectorAll('.contact-link').forEach(link => {
+            const label = link.querySelector('.contact-label');
+            if (!label) return;
+            items.push({
+                label: label.textContent,
+                sub: 'link ↗',
+                action: () => window.open(link.href, '_blank', 'noopener,noreferrer')
+            });
+        });
+
+        return items;
+    }
+
+    const allItems = buildItems();
+    let filtered = allItems;
+    let activeIndex = 0;
+
+    function render() {
+        list.innerHTML = '';
+        if (filtered.length === 0) {
+            const li = document.createElement('li');
+            li.className = 'cmdk-empty';
+            li.textContent = 'No matches';
+            list.appendChild(li);
+            return;
+        }
+        filtered.forEach((item, i) => {
+            const li = document.createElement('li');
+            li.className = i === activeIndex ? 'active' : '';
+            const label = document.createElement('span');
+            label.textContent = item.label;
+            const sub = document.createElement('span');
+            sub.className = 'cmdk-item-sub';
+            sub.textContent = item.sub;
+            li.appendChild(label);
+            li.appendChild(sub);
+            li.addEventListener('click', () => selectItem(i));
+            list.appendChild(li);
+        });
+    }
+
+    function selectItem(i) {
+        const item = filtered[i];
+        if (!item) return;
+        dialog.close();
+        item.action();
+    }
+
+    function openPalette() {
+        filtered = allItems;
+        activeIndex = 0;
+        input.value = '';
+        render();
+        dialog.showModal();
+        input.focus();
+    }
+
+    input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        filtered = q ? allItems.filter(item => item.label.toLowerCase().includes(q)) : allItems;
+        activeIndex = 0;
+        render();
+    });
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            activeIndex = Math.min(activeIndex + 1, filtered.length - 1);
+            render();
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            activeIndex = Math.max(activeIndex - 1, 0);
+            render();
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            selectItem(activeIndex);
+        }
+    });
+
+    dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+    });
+
+    if (hint) hint.addEventListener('click', openPalette);
+
+    document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            if (dialog.open) {
+                dialog.close();
+            } else {
+                openPalette();
+            }
+        }
+    });
+});
+```
+
+- [ ] **Step 2: Verify JS syntax**
+
+Run: `node --check assets/site.js`
+Expected: no output, exit code 0.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add assets/site.js
+git commit -m "Extract shared behavior into assets/site.js, index case studies in Cmd+K"
+```
+
+---
+
+### Task 3: Rewrite `index.html` as the thin homepage
+
+**Files:**
+- Modify: `index.html` (full rewrite of `<head>` styling/script references and `<body>` content — hero content itself is unchanged, everything project-related below it is replaced with a condensed teaser)
+
+**Interfaces:**
+- Consumes: `assets/style.css`, `assets/site.js` (from Tasks 1-2).
+- Produces: anchors `#connect` (unchanged), `id="work"` (new, replaces old `id="featured"` section on this page), nav with `aria-current="page"` on the Home link.
+
+- [ ] **Step 1: Replace the full contents of `index.html`**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karan — Security & Privacy Engineering</title>
+    <meta name="description" content="Karan — CS graduate, behavioural science background, privacy-first tools for real people.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none';">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://garuda8887.github.io/">
+    <meta property="og:title" content="Karan — Security & Privacy Engineering">
+    <meta property="og:description" content="CS graduate, behavioural science background, privacy-first tools for real people.">
+    <meta property="og:image" content="https://garuda8887.github.io/assets/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Karan — Security & Privacy Engineering">
+    <meta name="twitter:description" content="CS graduate, behavioural science background, privacy-first tools for real people.">
+    <meta name="twitter:image" content="https://garuda8887.github.io/assets/og-image.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="index.html" class="nav-brand">Karan<span class="dot">.</span></a>
+            <div class="nav-links">
+                <a href="index.html" aria-current="page">Home</a>
+                <a href="work.html">Work</a>
+                <a href="index.html#connect">Connect</a>
+            </div>
+        </nav>
+
+        <header class="reveal active">
+            <div class="hero-content">
+                <h1>Karan<span class="dot">.</span></h1>
+                <p class="tagline decrypt">Security & privacy engineering. Behavioural science. Clean product design.</p>
+
+                <div class="about">
+                    <p>CS graduate with a background in <span class="highlight">behavioural science</span> — including addiction psychiatry research at Harvard Medical School. I build <span class="highlight">privacy-first</span> tools that are designed to be truly usable.</p>
+                    <p>I believe the best software is invisible. Clean interfaces, <span class="highlight">self-hosted by default</span>, and zero unnecessary complexity. Deep into defensive cybersecurity, cognitive science, and keeping data where it belongs — on your own hardware.</p>
+                </div>
+            </div>
+            <div class="hero-demo">
+                <div class="hero-demo-head">
+                    <span class="hero-demo-title">encrypt.local</span>
+                    <span class="hero-demo-badge">AES-256-GCM · in your browser</span>
+                </div>
+                <label for="demo-input" class="hero-demo-label">Type a secret —</label>
+                <textarea id="demo-input" class="hero-demo-input" placeholder="nothing leaves this tab" rows="3" spellcheck="false" autocomplete="off"></textarea>
+                <div class="hero-demo-out">
+                    <span class="hero-demo-out-label">ciphertext</span>
+                    <code id="demo-cipher" class="hero-demo-cipher">—</code>
+                </div>
+                <button type="button" id="demo-burn" class="hero-demo-burn">Burn &amp; rotate key</button>
+                <p class="hero-demo-note">The actual technique behind <a href="work.html#whisperdrop">whisperdrop</a> — the key is generated in this tab and never sent anywhere; ciphertext is all a server would ever see.</p>
+            </div>
+        </header>
+
+        <section class="reveal" id="work">
+            <div class="section-header">
+                <h2 class="decrypt">Selected Work</h2>
+                <span class="section-sub">// Full write-ups on the Work page</span>
+            </div>
+
+            <div class="project-grid">
+                <a href="work.html#whisperdrop" class="project-card reveal delay-1">
+                    <div class="project-top">
+                        <span class="project-title">whisperdrop</span>
+                        <span class="project-arrow">→</span>
+                    </div>
+                    <p class="project-desc">A burn-after-reading pastebin where the server never sees the plaintext — it can't decrypt what it stores even if it wanted to.</p>
+                    <div class="tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">AES-256-GCM</span>
+                        <span class="tag">Zero-knowledge</span>
+                    </div>
+                </a>
+
+                <a href="work.html#noctua" class="project-card reveal delay-2">
+                    <div class="project-top">
+                        <span class="project-title">Noctua</span>
+                        <span class="project-arrow">→</span>
+                    </div>
+                    <p class="project-desc">An offline attack-surface management tool built for air-gapped and confidential pentest engagements — network topology never leaves the machine.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">LLM</span>
+                        <span class="tag">Nmap</span>
+                    </div>
+                </a>
+
+                <a href="work.html#recall" class="project-card reveal delay-3">
+                    <div class="project-top">
+                        <span class="project-title">Recall</span>
+                        <span class="project-arrow">→</span>
+                    </div>
+                    <p class="project-desc">Anki's spaced-repetition algorithm, wrapped in a calendar you actually want to open — because a scheduler only works if you show up to it.</p>
+                    <div class="tags">
+                        <span class="tag">Node.js</span>
+                        <span class="tag">SQLite</span>
+                        <span class="tag">PWA</span>
+                    </div>
+                </a>
+
+                <a href="work.html#gradsphere" class="project-card reveal delay-1">
+                    <div class="project-top">
+                        <span class="project-title">Gradsphere</span>
+                        <span class="project-arrow">→</span>
+                    </div>
+                    <p class="project-desc">A SaaS platform I co-founded and helped build to simplify the college application process for students navigating admissions.</p>
+                    <div class="tags">
+                        <span class="tag">Co-founder</span>
+                        <span class="tag">SaaS</span>
+                        <span class="tag">EdTech</span>
+                    </div>
+                </a>
+            </div>
+
+            <p class="work-more"><a href="work.html">See all the work →</a></p>
+        </section>
+
+        <section class="reveal" id="connect">
+            <div class="section-header">
+                <h2 class="decrypt">Connect</h2>
+                <span class="section-sub">// Links & Contact</span>
+            </div>
+
+            <div class="contact-links">
+                <a href="https://github.com/Garuda8887" target="_blank" rel="noopener noreferrer" class="contact-link reveal delay-1">
+                    <span class="contact-label">GitHub</span>
+                    <span class="contact-mono">github.com/Garuda8887</span>
+                </a>
+                <a href="https://tryhackme.com/p/Garuda8887" target="_blank" rel="noopener noreferrer" class="contact-link reveal delay-2">
+                    <span class="contact-label">TryHackMe</span>
+                    <span class="contact-mono">tryhackme.com/p/Garuda8887</span>
+                </a>
+                <a href="https://github.com/Garuda8887/tutorials" target="_blank" rel="noopener noreferrer" class="contact-link reveal delay-3">
+                    <span class="contact-label">Guides</span>
+                    <span class="contact-mono">github.com/Garuda8887/tutorials</span>
+                </a>
+                <a href="mailto:worthyocra8884@tuta.io" class="contact-link reveal delay-1">
+                    <span class="contact-label">Email</span>
+                    <span class="contact-mono">worthyocra8884@tuta.io</span>
+                </a>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-main">
+                <span>© 2026 Karan. Built with precision.</span>
+                <span class="footer-time" id="local-time"></span>
+            </div>
+            <div class="footer-meta">
+                <span class="footer-mono">Static hosting · zero analytics · zero trackers · restrictive CSP · <a href="/.well-known/security.txt">security.txt</a></span>
+            </div>
+        </footer>
+    </div>
+
+    <dialog id="cmdk" class="cmdk">
+        <input type="text" id="cmdk-input" class="cmdk-input" placeholder="Jump to a section or link..." autocomplete="off" spellcheck="false">
+        <ul id="cmdk-list" class="cmdk-list"></ul>
+    </dialog>
+
+    <button type="button" id="cmdk-hint" class="cmdk-hint" aria-label="Open quick navigation">
+        <span>Jump to</span>
+        <kbd>⌘K</kbd>
+    </button>
+
+    <script>
+        // Hero demo — real client-side AES-256-GCM via the Web Crypto API
+        (async function initHeroDemo() {
+            const input = document.getElementById('demo-input');
+            const out = document.getElementById('demo-cipher');
+            const burnBtn = document.getElementById('demo-burn');
+            if (!input || !out || !burnBtn || !window.crypto?.subtle) return;
+
+            function toHex(buf) {
+                return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+            console.assert(toHex(new Uint8Array([0, 255, 16]).buffer) === '00ff10', 'hero demo hex encoding broken');
+
+            let key = null;
+            async function rotateKey() {
+                key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, ['encrypt']);
+            }
+
+            async function render() {
+                const text = input.value;
+                if (!text) { out.textContent = '—'; return; }
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                const data = new TextEncoder().encode(text);
+                const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
+                out.textContent = `${toHex(iv)}:${toHex(ciphertext)}`;
+            }
+
+            let debounceId;
+            input.addEventListener('input', () => {
+                clearTimeout(debounceId);
+                debounceId = setTimeout(render, 60);
+            });
+
+            burnBtn.addEventListener('click', async () => {
+                out.classList.add('burning');
+                input.value = '';
+                await rotateKey();
+                setTimeout(() => { out.textContent = '—'; out.classList.remove('burning'); }, 150);
+                input.focus();
+            });
+
+            await rotateKey();
+        })();
+    </script>
+    <script src="assets/site.js"></script>
+</body>
+</html>
+```
+
+- [ ] **Step 2: Verify the inline hero-demo script is syntactically valid**
+
+Run:
+```bash
+node -e "
+const fs = require('fs');
+const html = fs.readFileSync('index.html', 'utf8');
+const m = html.match(/<script>([\s\S]*?)<\/script>/);
+if (!m) { console.error('No inline script found'); process.exit(1); }
+new Function(m[1]);
+console.log('OK — inline script parses');
+"
+```
+Expected: `OK — inline script parses`.
+
+- [ ] **Step 3: Serve locally and spot-check the homepage**
+
+Run: `python -m http.server 8790 &` (if not already running), then `curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8790/index.html`
+Expected: `200`
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add index.html
+git commit -m "Rewrite index.html as a thin homepage, move project depth to work.html"
+```
+
+---
+
+### Task 4: Create `work.html`
+
+**Files:**
+- Create: `work.html`
+
+**Interfaces:**
+- Consumes: `assets/style.css`, `assets/site.js` (from Tasks 1-2).
+- Produces: anchors `#featured`, `#security`, `#product` (section ids, matching the old `index.html` ids so nothing else needs to change), and `#whisperdrop`, `#noctua`, `#recall`, `#gradsphere` (new `id`s on each `.case-study`, consumed by `index.html`'s teaser cards and hero-demo note from Task 3).
+
+- [ ] **Step 1: Create `work.html`**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work — Karan</title>
+    <meta name="description" content="Case studies and projects — security tooling, behavioural-science software, and product builds by Karan.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none';">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://garuda8887.github.io/work.html">
+    <meta property="og:title" content="Work — Karan">
+    <meta property="og:description" content="Case studies and projects — security tooling, behavioural-science software, and product builds by Karan.">
+    <meta property="og:image" content="https://garuda8887.github.io/assets/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Work — Karan">
+    <meta name="twitter:description" content="Case studies and projects — security tooling, behavioural-science software, and product builds by Karan.">
+    <meta name="twitter:image" content="https://garuda8887.github.io/assets/og-image.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="index.html" class="nav-brand">Karan<span class="dot">.</span></a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="work.html" aria-current="page">Work</a>
+                <a href="index.html#connect">Connect</a>
+            </div>
+        </nav>
+
+        <header class="work-header reveal active">
+            <h1 class="work-title">Work<span class="dot">.</span></h1>
+            <p class="work-subtitle">Case studies and the rest of the shelf — security tooling, spaced-repetition software, and product builds.</p>
+        </header>
+
+        <section class="reveal" id="featured">
+            <div class="section-header">
+                <h2 class="decrypt">Featured Builds</h2>
+                <span class="section-sub">// Systems worth the extra detail</span>
+            </div>
+
+            <div class="case-study reveal delay-1" id="whisperdrop">
+                <div class="case-study-head">
+                    <span class="case-study-title">whisperdrop</span>
+                    <a href="https://github.com/Garuda8887/whisperdrop" target="_blank" rel="noopener noreferrer" class="case-study-link">View repo ↗</a>
+                </div>
+                <p class="case-study-desc">A burn-after-reading pastebin where the server never sees the plaintext — it can't decrypt what it stores even if it wanted to.</p>
+                <div class="case-study-media">
+                    <div class="case-study-shots">
+                        <div class="case-study-shot">
+                            <img src="assets/screenshots/whisperdrop-create.png" alt="WhisperDrop's compose screen — paste a secret, encrypt, and get a link" loading="lazy">
+                        </div>
+                        <div class="case-study-shot">
+                            <img src="assets/screenshots/whisperdrop-burned.png" alt="Opening the same link a second time — the paste is already burned" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="case-study-body">
+                        <div class="flow">
+                            <span class="flow-step">encrypt in browser</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">ciphertext + IV → server</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step flow-key">key rides in URL #fragment</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">burn on read</span>
+                        </div>
+                        <ol class="case-study-steps">
+                            <li>Browser generates a random AES-256-GCM key and encrypts the text locally, via the Web Crypto API</li>
+                            <li>Only ciphertext and an IV are sent to the server — the key itself never leaves the browser</li>
+                            <li>The share link carries the key after a <code>#</code> — URL fragments are never sent in HTTP requests, so it never touches a server log</li>
+                            <li>Opening the link decrypts locally, then the server deletes the paste immediately — a second visit returns "not found"</li>
+                        </ol>
+                        <p class="case-study-note">The hard part wasn't the encryption — it was designing the server to be provably unable to help, not just promising not to.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="case-study reveal delay-2" id="noctua">
+                <div class="case-study-head">
+                    <span class="case-study-title">Noctua</span>
+                    <a href="https://github.com/Garuda8887/Noctua" target="_blank" rel="noopener noreferrer" class="case-study-link">View repo ↗</a>
+                </div>
+                <p class="case-study-desc">An offline attack-surface management tool built for air-gapped and confidential pentest engagements — network topology never leaves the machine.</p>
+                <div class="flow">
+                    <span class="flow-step">Nmap scan</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">deterministic checks (EOL / creds / KEV)</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step flow-key">local LLM synthesis (map-reduce)</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">interactive HTML report</span>
+                </div>
+                <ol class="case-study-steps">
+                    <li>Ingests an Nmap scan (or runs one directly) against the target subnet</li>
+                    <li>A deterministic engine flags end-of-life software, default credentials, and known-exploited vulnerabilities against locally cached feeds</li>
+                    <li>A local Ollama model synthesizes the findings into attack narratives, using map-reduce chunking so enterprise-sized scans don't overrun a small local context window</li>
+                    <li>Everything renders into a self-contained, interactive HTML network graph — no cloud call at any step</li>
+                </ol>
+                <p class="case-study-note">The constraint that shaped everything: a local LLM's context window is small, but a real engagement's attack surface isn't — the map-reduce step exists because the network doesn't get smaller to fit the model.</p>
+            </div>
+
+            <div class="case-study reveal delay-3" id="recall">
+                <div class="case-study-head">
+                    <span class="case-study-title">Recall</span>
+                    <a href="https://github.com/Garuda8887/recall" target="_blank" rel="noopener noreferrer" class="case-study-link">View repo ↗</a>
+                </div>
+                <p class="case-study-desc">Anki's spaced-repetition algorithm, wrapped in a calendar you actually want to open — because a scheduler only works if you show up to it.</p>
+                <div class="case-study-media">
+                    <div class="case-study-shots">
+                        <div class="case-study-shot">
+                            <img src="assets/screenshots/recall-calendar.png" alt="Recall's month-view calendar with color-coded review chips and a study streak" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="case-study-body">
+                        <div class="flow">
+                            <span class="flow-step">log session + rating</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">SM-2 reschedules</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">calendar / forgetting curve / graph</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step flow-key">stays visible, auto catch-up</span>
+                        </div>
+                        <ol class="case-study-steps">
+                            <li>Log a study session — topic, subject, and a confidence rating from Blank to Perfect</li>
+                            <li>SM-2 reschedules the next review from that rating and a per-topic ease-factor, not a fixed interval</li>
+                            <li>The session lands on a month-view calendar, feeds a per-topic forgetting-curve chart, and links into a knowledge graph of related sessions</li>
+                            <li>Missed reviews stay visibly overdue instead of vanishing; recurring topics auto-generate catch-up instances so nothing quietly falls off the schedule</li>
+                        </ol>
+                        <p class="case-study-note">Anki already has the SM-2 math — that part's a solved problem. The actual work was building a schedule someone wants to open, since a spaced-repetition system is only as good as whether you show up to it.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="case-study reveal delay-1" id="gradsphere">
+                <div class="case-study-head">
+                    <span class="case-study-title">Gradsphere <span class="case-study-role">— Co-founder</span></span>
+                    <a href="https://gradsphere-smoky.vercel.app/" target="_blank" rel="noopener noreferrer" class="case-study-link">Visit site ↗</a>
+                </div>
+                <p class="case-study-desc">A SaaS platform I co-founded and helped build to simplify the college application process for students navigating admissions.</p>
+                <div class="flow">
+                    <span class="flow-step">explore programs</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">track requirements & deadlines</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">apply</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="reveal" id="security">
+            <div class="section-header">
+                <h2 class="decrypt">Security & Privacy</h2>
+                <span class="section-sub">// Encryption, forensics, and offensive tooling</span>
+            </div>
+
+            <div class="project-grid">
+                <a href="https://github.com/Garuda8887/DropZone" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-1">
+                    <div class="project-top">
+                        <span class="project-title">DropZone</span>
+                        <span class="project-arrow">↗</span>
+                    </div>
+                    <p class="project-desc">Secure, peer-to-peer file transfer in the browser using WebRTC — no uploads, no size limits, no accounts.</p>
+                    <div class="tags">
+                        <span class="tag">WebRTC</span>
+                        <span class="tag">P2P</span>
+                        <span class="tag">Socket.io</span>
+                    </div>
+                </a>
+
+                <a href="https://github.com/Garuda8887/linux-forensics-collector" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-2">
+                    <div class="project-top">
+                        <span class="project-title">linux-forensics-collector</span>
+                        <span class="project-arrow">↗</span>
+                    </div>
+                    <p class="project-desc">Zero-dependency, automated Linux forensics triage script. Safely collects system logs and execution evidence into an AI-ready report.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Forensics</span>
+                        <span class="tag">Blue Team</span>
+                    </div>
+                </a>
+
+                <a href="https://github.com/Garuda8887/Checker" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-3">
+                    <div class="project-top">
+                        <span class="project-title">Checker</span>
+                        <span class="project-arrow">↗</span>
+                    </div>
+                    <p class="project-desc">Parallelised OSINT scraper and media downloader with regex filtering. Built for research and archiving — fast, scriptable.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">OSINT</span>
+                        <span class="tag">Parallel</span>
+                    </div>
+                </a>
+
+                <a href="https://github.com/Garuda8887/PortScout" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-1">
+                    <div class="project-top">
+                        <span class="project-title">PortScout</span>
+                        <span class="project-arrow">↗</span>
+                    </div>
+                    <p class="project-desc">Terminal UI for scanning ports, identifying what's running, and reserving free ones. Built with Textual for a proper interactive experience.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Textual</span>
+                        <span class="tag">TUI</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section class="reveal" id="product">
+            <div class="section-header">
+                <h2 class="decrypt">Product & Tooling</h2>
+                <span class="section-sub">// Practical software people actually use</span>
+            </div>
+
+            <div class="project-grid">
+                <a href="https://github.com/Garuda8887/fitcheck" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-1">
+                    <div class="project-top">
+                        <span class="project-title">fitcheck</span>
+                        <span class="project-arrow">↗</span>
+                    </div>
+                    <p class="project-desc">Know before you prompt. A blazingly fast CLI tool that calculates codebase token costs and detects bloat to optimize AI prompts.</p>
+                    <div class="tags">
+                        <span class="tag">TypeScript</span>
+                        <span class="tag">CLI</span>
+                        <span class="tag">LLM</span>
+                    </div>
+                </a>
+
+                <a href="https://github.com/Garuda8887/lingolift" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-2">
+                    <div class="project-top">
+                        <span class="project-title">lingolift</span>
+                        <span class="project-arrow">↗</span>
+                    </div>
+                    <p class="project-desc">A lightweight, open-source PDF translator with a user-friendly GUI. Seamless translation into multiple global languages.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Tkinter</span>
+                        <span class="tag">PDF</span>
+                    </div>
+                </a>
+
+                <a href="https://github.com/Garuda8887/Renamer" target="_blank" rel="noopener noreferrer" class="project-card reveal delay-3">
+                    <div class="project-top">
+                        <span class="project-title">Renamer</span>
+                        <span class="project-arrow">↗</span>
+                    </div>
+                    <p class="project-desc">Batch rename photos and videos using real metadata (EXIF). Sort by file size, name, or actual date taken. Simple GUI.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">EXIF</span>
+                        <span class="tag">GUI</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-main">
+                <span>© 2026 Karan. Built with precision.</span>
+                <span class="footer-time" id="local-time"></span>
+            </div>
+            <div class="footer-meta">
+                <span class="footer-mono">Static hosting · zero analytics · zero trackers · restrictive CSP · <a href="/.well-known/security.txt">security.txt</a></span>
+            </div>
+        </footer>
+    </div>
+
+    <dialog id="cmdk" class="cmdk">
+        <input type="text" id="cmdk-input" class="cmdk-input" placeholder="Jump to a section or link..." autocomplete="off" spellcheck="false">
+        <ul id="cmdk-list" class="cmdk-list"></ul>
+    </dialog>
+
+    <button type="button" id="cmdk-hint" class="cmdk-hint" aria-label="Open quick navigation">
+        <span>Jump to</span>
+        <kbd>⌘K</kbd>
+    </button>
+
+    <script src="assets/site.js"></script>
+</body>
+</html>
+```
+
+- [ ] **Step 2: Serve locally and spot-check**
+
+Run: `curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8790/work.html`
+Expected: `200`
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add work.html
+git commit -m "Add work.html with the 4 case studies and both category grids"
+```
+
+---
+
+### Task 5: Cross-page link/anchor integrity check
+
+**Files:**
+- None created — this is a verification-only task using a throwaway script (not committed; this repo has no test suite to add it to, and a one-off checker isn't worth keeping).
+
+**Interfaces:**
+- Consumes: `index.html`, `work.html` as written by Tasks 3-4.
+
+- [ ] **Step 1: Run a link/anchor integrity check across both pages**
+
+Run:
+```bash
+node -e "
+const fs = require('fs');
+const files = { 'index.html': fs.readFileSync('index.html', 'utf8'), 'work.html': fs.readFileSync('work.html', 'utf8') };
+let failed = false;
+
+function ids(html) {
+    const set = new Set();
+    for (const m of html.matchAll(/\bid=\"([^\"]+)\"/g)) set.add(m[1]);
+    return set;
+}
+
+const idsByFile = { 'index.html': ids(files['index.html']), 'work.html': ids(files['work.html']) };
+
+for (const [file, html] of Object.entries(files)) {
+    for (const m of html.matchAll(/href=\"([^\"]+)\"/g)) {
+        const href = m[1];
+        if (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('/')) continue;
+        const [target, hash] = href.split('#');
+        const targetFile = target || file;
+        if (!files[targetFile]) { console.error(file, '-> broken link to', href, '(no such page)'); failed = true; continue; }
+        if (hash && !idsByFile[targetFile].has(hash)) { console.error(file, '-> broken anchor', href); failed = true; }
+    }
+}
+
+if (failed) process.exit(1);
+console.log('OK — every internal link resolves');
+"
+```
+Expected: `OK — every internal link resolves`. If it prints any `broken` lines, fix the corresponding `href` or missing `id` in `index.html`/`work.html` before continuing.
+
+- [ ] **Step 2: Verify both pages still reference the shared assets and the CSP meta tag is present on both**
+
+Run:
+```bash
+node -e "
+const fs = require('fs');
+for (const file of ['index.html', 'work.html']) {
+    const html = fs.readFileSync(file, 'utf8');
+    if (!html.includes('assets/style.css')) throw new Error(file + ' missing style.css link');
+    if (!html.includes('assets/site.js')) throw new Error(file + ' missing site.js script');
+    if (!html.includes('Content-Security-Policy')) throw new Error(file + ' missing CSP meta tag');
+}
+console.log('OK — both pages wired to shared assets and carry their own CSP');
+"
+```
+Expected: `OK — both pages wired to shared assets and carry their own CSP`.
+
+- [ ] **Step 3: Confirm no dangling references to the removed inline `<style>`/duplicated `<script>` blocks**
+
+Run: `grep -c "<style>" index.html work.html` (both should print `0`; if `grep` finds no matches at all in one file it exits non-zero and prints nothing for that file — treat "no match" the same as `0`)
+
+Expected: no `<style>` tag in either file — all styling now lives in `assets/style.css`.
+
+- [ ] **Step 4: Final manual check (not automatable — do this yourself before pushing)**
+
+Open `http://localhost:8790/index.html` and `http://localhost:8790/work.html` in a browser and confirm:
+- Nav's current-page link is visually distinct on each page.
+- Homepage teaser cards jump to the right case study on `work.html`.
+- Cmd+K opens on both pages and, on `work.html`, includes the 4 case studies as jump targets.
+- Mobile width (≤768px): nav doesn't overlap, header stacks with the hero-demo below the name card (not above it — this was the bug fixed earlier this session).
+- Reduced-motion (`prefers-reduced-motion: reduce`) still skips the reveal/decrypt animations on both pages.
+
+This step has no command — it's a judgment call the plan can't automate away.
+
+- [ ] **Step 5: Stage and note completion (do not push — ask the user first)**
+
+```bash
+git status --short
+git log --oneline -6
+```
+
+Confirm the working tree is clean and all 4 prior commits are present, then report back to the user and wait for explicit confirmation before running `git push`.
+
+---
+
+## Self-Review Notes
+
+- **Spec coverage:** site map (Tasks 3-4), shared CSS/JS extraction (Tasks 1-2), nav bar (Tasks 1, 3, 4), Cmd+K case-study indexing (Task 2), CSP duplication (Task 4, checked in Task 5), out-of-scope items respected (no redesign, no per-case-study pages, no build step) — all covered.
+- **Placeholder scan:** no TBD/TODO; every step has literal file content or a runnable command.
+- **Type/id consistency:** `work.html#whisperdrop` / `#noctua` / `#recall` / `#gradsphere` used in Task 3's teaser cards and hero-demo note match the `id` attributes added to the corresponding `.case-study` divs in Task 4. `assets/style.css` and `assets/site.js` filenames match the `<link>`/`<script src>` paths in both Task 3 and Task 4.
+- **Scope:** single subsystem (this portfolio's page structure), no decomposition needed.
